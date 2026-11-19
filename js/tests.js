@@ -6,75 +6,100 @@ import {
 } from "./storage.js";
 
 
-const TESTS_KEY =
-    "synaptiqTests";
-
+const TESTS_KEY = "synaptiqTests";
 
 let activeTest = null;
 
 
 /* =========================================================
    DATA
-   ========================================================= */
+========================================================= */
 
-function getQuestions(){
+function getQuestions() {
 
-    const questions =
-        get(
-            "questions",
-            []
-        );
+    const questions = get(
+        "questions",
+        []
+    );
 
-
-    return Array.isArray(
-        questions
-    )
+    return Array.isArray(questions)
         ? questions
         : [];
-
 }
 
 
-function getTests(){
+function getTests() {
 
-    const tests =
-        get(
-            TESTS_KEY,
-            []
+    const tests = get(
+        TESTS_KEY,
+        []
+    );
+
+    return Array.isArray(tests)
+        ? tests
+        : [];
+}
+
+
+/* =========================================================
+   GET QUESTION TEXT
+========================================================= */
+
+function getQuestionText(question) {
+
+    if (!question)
+        return "Question text unavailable.";
+
+
+    const possibleText = [
+
+        question.text,
+
+        question.question,
+
+        question.questionText,
+
+        question.title,
+
+        question.prompt
+
+    ];
+
+
+    const text =
+        possibleText.find(
+            value =>
+                value !== undefined &&
+                value !== null &&
+                String(value).trim() !== ""
         );
 
 
-    return Array.isArray(
-        tests
-    )
-        ? tests
-        : [];
-
+    return text
+        ? String(text)
+        : "Question text unavailable.";
 }
 
 
 /* =========================================================
    BUILD TEST UI
-   ========================================================= */
+========================================================= */
 
-function buildTestPanel(){
+function buildTestPanel() {
 
-    const page =
-        $("testsPage");
+    const page = $("testsPage");
 
-
-    if(!page)
+    if (!page)
         return;
 
 
-    if(
+    if (
         page.querySelector(
             ".custom-test-workspace"
         )
-    ){
+    ) {
 
         return;
-
     }
 
 
@@ -98,6 +123,7 @@ function buildTestPanel(){
                 </p>
 
             </div>
+
 
             <button
                 id="createTest"
@@ -186,15 +212,15 @@ function buildTestPanel(){
                             Mixed
                         </option>
 
-                        <option>
+                        <option value="Easy">
                             Easy
                         </option>
 
-                        <option>
+                        <option value="Medium">
                             Medium
                         </option>
 
-                        <option>
+                        <option value="Hard">
                             Hard
                         </option>
 
@@ -213,7 +239,10 @@ function buildTestPanel(){
                             15 minutes
                         </option>
 
-                        <option value="30" selected>
+                        <option
+                            value="30"
+                            selected
+                        >
                             30 minutes
                         </option>
 
@@ -229,7 +258,46 @@ function buildTestPanel(){
                             90 minutes
                         </option>
 
+                        <option value="custom">
+                            Custom Time
+                        </option>
+
                     </select>
+
+
+                    <div
+                        id="customDurationBox"
+                        style="
+                            display:none;
+                            margin-top:10px;
+                        "
+                    >
+
+                        <label>
+                            Custom Time (minutes)
+                        </label>
+
+                        <input
+                            id="testCustomDuration"
+                            type="number"
+                            min="1"
+                            max="300"
+                            value="30"
+                            placeholder="Example: 25"
+                        >
+
+                        <small
+                            style="
+                                display:block;
+                                margin-top:6px;
+                                opacity:.7;
+                            "
+                        >
+                            Enter any duration from
+                            1 to 300 minutes.
+                        </small>
+
+                    </div>
 
 
                     <button
@@ -240,6 +308,7 @@ function buildTestPanel(){
                     </button>
 
                 </form>
+
 
                 <div
                     id="testBuilderMessage"
@@ -299,20 +368,112 @@ function buildTestPanel(){
 
     `;
 
+
+    $("testDuration")
+        ?.addEventListener(
+            "change",
+            updateCustomDurationVisibility
+        );
+
+
+    updateCustomDurationVisibility();
+
+}
+
+
+/* =========================================================
+   CUSTOM TIME VISIBILITY
+========================================================= */
+
+function updateCustomDurationVisibility() {
+
+    const select =
+        $("testDuration");
+
+    const box =
+        $("customDurationBox");
+
+
+    if (
+        !select ||
+        !box
+    ) {
+
+        return;
+
+    }
+
+
+    box.style.display =
+        select.value === "custom"
+            ? "block"
+            : "none";
+}
+
+
+/* =========================================================
+   GET SELECTED DURATION
+========================================================= */
+
+function getSelectedDuration() {
+
+    const select =
+        $("testDuration");
+
+
+    if (!select)
+        return 30;
+
+
+    if (
+        select.value !== "custom"
+    ) {
+
+        const minutes =
+            Number(select.value);
+
+
+        return (
+            Number.isFinite(minutes) &&
+            minutes > 0
+        )
+            ? minutes
+            : 30;
+    }
+
+
+    const custom =
+        Number(
+            $("testCustomDuration")
+                ?.value
+        );
+
+
+    if (
+        !Number.isFinite(custom) ||
+        custom < 1 ||
+        custom > 300
+    ) {
+
+        return null;
+    }
+
+
+    return Math.floor(custom);
 }
 
 
 /* =========================================================
    SUBJECT OPTIONS
-   ========================================================= */
+========================================================= */
 
-function populateSubjects(){
+function populateSubjects() {
 
     const select =
         $("testSubject");
 
 
-    if(!select)
+    if (!select)
         return;
 
 
@@ -320,17 +481,16 @@ function populateSubjects(){
         getQuestions();
 
 
-    const subjects =
-        [
-            ...new Set(
-                questions
-                    .map(
-                        question =>
-                            question.subject
-                    )
-                    .filter(Boolean)
-            )
-        ];
+    const subjects = [
+        ...new Set(
+            questions
+                .map(
+                    question =>
+                        question.subject
+                )
+                .filter(Boolean)
+        )
+    ];
 
 
     select.innerHTML = `
@@ -370,16 +530,16 @@ function populateSubjects(){
 
 
 /* =========================================================
-   RENDER STATS
-   ========================================================= */
+   STATS
+========================================================= */
 
-function renderStats(){
+function renderStats() {
 
     const box =
         $("testStats");
 
 
-    if(!box)
+    if (!box)
         return;
 
 
@@ -403,15 +563,17 @@ function renderStats(){
 
     const average =
         scores.length
-            ? Math.round(
+            ?
+            Math.round(
                 scores.reduce(
-                    (a,b) =>
+                    (a, b) =>
                         a + b,
                     0
                 ) /
                 scores.length
             )
-            : 0;
+            :
+            0;
 
 
     box.innerHTML = `
@@ -455,21 +617,20 @@ function renderStats(){
         </div>
 
     `;
-
 }
 
 
 /* =========================================================
-   RENDER HISTORY
-   ========================================================= */
+   HISTORY
+========================================================= */
 
-function renderHistory(){
+function renderHistory() {
 
     const box =
         $("testHistory");
 
 
-    if(!box)
+    if (!box)
         return;
 
 
@@ -477,7 +638,7 @@ function renderHistory(){
         getTests();
 
 
-    if(!tests.length){
+    if (!tests.length) {
 
         box.innerHTML = `
 
@@ -491,7 +652,6 @@ function renderHistory(){
         `;
 
         return;
-
     }
 
 
@@ -515,16 +675,20 @@ function renderHistory(){
                             </strong>
 
                             <small>
+
                                 ${escapeHtml(
                                     test.subject ||
                                     "All Subjects"
                                 )}
+
                                 •
                                 ${test.questionCount}
                                 questions
+
                                 •
                                 ${test.duration}
                                 min
+
                             </small>
 
                         </div>
@@ -536,8 +700,10 @@ function renderHistory(){
 
                             ${
                                 test.completed
-                                    ? `${test.score}%`
-                                    : "Not attempted"
+                                    ?
+                                    `${test.score}%`
+                                    :
+                                    "Not attempted"
                             }
 
                         </div>
@@ -547,17 +713,14 @@ function renderHistory(){
                 `
             )
             .join("");
-
 }
 
 
 /* =========================================================
    GENERATE TEST
-   ========================================================= */
+========================================================= */
 
-function generateTest(
-    event
-){
+function generateTest(event) {
 
     event.preventDefault();
 
@@ -565,7 +728,7 @@ function generateTest(
     const name =
         $("testName")
             ?.value
-            .trim();
+            ?.trim();
 
 
     const subject =
@@ -588,10 +751,25 @@ function generateTest(
 
 
     const duration =
-        Number(
-            $("testDuration")
-                ?.value
-        ) || 30;
+        getSelectedDuration();
+
+
+    if (!duration) {
+
+        const message =
+            $("testBuilderMessage");
+
+
+        if (message) {
+
+            message.textContent =
+                "Please enter a valid custom time between 1 and 300 minutes.";
+
+        }
+
+
+        return;
+    }
 
 
     const allQuestions =
@@ -602,10 +780,12 @@ function generateTest(
         allQuestions.slice();
 
 
-    if(
+    /* SUBJECT */
+
+    if (
         subject !==
         "all"
-    ){
+    ) {
 
         pool =
             pool.filter(
@@ -614,7 +794,7 @@ function generateTest(
                         question.subject ||
                         ""
                     )
-                    .toLowerCase()
+                        .toLowerCase()
                     ===
                     subject
                         .toLowerCase()
@@ -623,10 +803,12 @@ function generateTest(
     }
 
 
-    if(
+    /* DIFFICULTY */
+
+    if (
         difficulty !==
         "all"
-    ){
+    ) {
 
         pool =
             pool.filter(
@@ -635,7 +817,7 @@ function generateTest(
                         question.difficulty ||
                         ""
                     )
-                    .toLowerCase()
+                        .toLowerCase()
                     ===
                     difficulty
                         .toLowerCase()
@@ -644,13 +826,13 @@ function generateTest(
     }
 
 
-    if(!pool.length){
+    if (!pool.length) {
 
         const message =
             $("testBuilderMessage");
 
 
-        if(message){
+        if (message) {
 
             message.textContent =
                 "No matching saved questions found. Add questions to your Question Bank first.";
@@ -659,16 +841,17 @@ function generateTest(
 
 
         return;
-
     }
 
+
+    /* RANDOMIZE */
 
     pool =
         pool
             .sort(
                 () =>
                     Math.random() -
-                    .5
+                    0.5
             )
             .slice(
                 0,
@@ -679,6 +862,8 @@ function generateTest(
             );
 
 
+    /* ACTIVE TEST */
+
     activeTest = {
 
         id:
@@ -687,14 +872,21 @@ function generateTest(
         name,
 
         subject:
-
             subject === "all"
-                ? "All Subjects"
-                : subject,
+                ?
+                "All Subjects"
+                :
+                subject,
 
         difficulty,
 
         duration,
+
+        durationSeconds:
+            duration * 60,
+
+        remainingSeconds:
+            duration * 60,
 
         questions:
             pool,
@@ -702,28 +894,217 @@ function generateTest(
         startedAt:
             Date.now(),
 
-        answers:{}
+        answers: {},
+
+        timerId:
+            null
 
     };
 
 
     showTestRunner();
+}
 
+
+/* =========================================================
+   FORMAT TIMER
+========================================================= */
+
+function formatTime(seconds) {
+
+    seconds =
+        Math.max(
+            0,
+            Math.floor(
+                Number(seconds) || 0
+            )
+        );
+
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+
+    const minutes =
+        Math.floor(
+            (seconds % 3600) / 60
+        );
+
+
+    const remainingSeconds =
+        seconds % 60;
+
+
+    if (hours > 0) {
+
+        return (
+            String(hours)
+                .padStart(2, "0")
+            +
+            ":" +
+            String(minutes)
+                .padStart(2, "0")
+            +
+            ":" +
+            String(
+                remainingSeconds
+            )
+                .padStart(2, "0")
+        );
+
+    }
+
+
+    return (
+        String(minutes)
+            .padStart(2, "0")
+        +
+        ":" +
+        String(
+            remainingSeconds
+        )
+            .padStart(2, "0")
+    );
+}
+
+
+/* =========================================================
+   UPDATE TIMER
+========================================================= */
+
+function updateTimerDisplay() {
+
+    if (!activeTest)
+        return;
+
+
+    const timer =
+        $("customTestTimer");
+
+
+    if (!timer)
+        return;
+
+
+    timer.textContent =
+        formatTime(
+            activeTest.remainingSeconds
+        );
+
+
+    if (
+        activeTest.remainingSeconds <=
+        60
+    ) {
+
+        timer.style.color =
+            "#ef4444";
+
+        timer.style.fontWeight =
+            "900";
+
+    }
+    else {
+
+        timer.style.color =
+            "";
+
+        timer.style.fontWeight =
+            "800";
+
+    }
+}
+
+
+/* =========================================================
+   START TIMER
+========================================================= */
+
+function startTestTimer() {
+
+    if (!activeTest)
+        return;
+
+
+    stopTestTimer();
+
+
+    updateTimerDisplay();
+
+
+    activeTest.timerId =
+        setInterval(
+            () => {
+
+                if (!activeTest)
+                    return;
+
+
+                activeTest.remainingSeconds--;
+
+
+                updateTimerDisplay();
+
+
+                if (
+                    activeTest
+                        .remainingSeconds <=
+                    0
+                ) {
+
+                    stopTestTimer();
+
+
+                    finishTest(
+                        true
+                    );
+
+                }
+
+            },
+            1000
+        );
+}
+
+
+/* =========================================================
+   STOP TIMER
+========================================================= */
+
+function stopTestTimer() {
+
+    if (
+        activeTest &&
+        activeTest.timerId
+    ) {
+
+        clearInterval(
+            activeTest.timerId
+        );
+
+
+        activeTest.timerId =
+            null;
+    }
 }
 
 
 /* =========================================================
    RUNNER
-   ========================================================= */
+========================================================= */
 
-function showTestRunner(){
+function showTestRunner() {
 
     const runner =
         $("testRunner");
 
 
-    if(!runner ||
-       !activeTest)
+    if (
+        !runner ||
+        !activeTest
+    )
         return;
 
 
@@ -734,9 +1115,13 @@ function showTestRunner(){
 
     runner.innerHTML = `
 
-        <div class="panel test-runner-panel">
+        <div
+            class="panel test-runner-panel"
+        >
 
-            <div class="test-runner-head">
+            <div
+                class="test-runner-head"
+            >
 
                 <div>
 
@@ -750,11 +1135,85 @@ function showTestRunner(){
                         )}
                     </h2>
 
+                    <small>
+                        ${
+                            activeTest.questions.length
+                        }
+                        questions
+                        •
+                        ${
+                            activeTest.duration
+                        }
+                        minute test
+                    </small>
+
                 </div>
 
+
+                <div
+                    style="
+                        text-align:right;
+                        min-width:110px;
+                    "
+                >
+
+                    <small
+                        style="
+                            display:block;
+                            font-size:11px;
+                            opacity:.7;
+                        "
+                    >
+                        TIME REMAINING
+                    </small>
+
+                    <div
+                        id="customTestTimer"
+                        aria-live="polite"
+                        style="
+                            font-size:30px;
+                            line-height:1.1;
+                            font-weight:800;
+                            margin-top:5px;
+                            letter-spacing:1px;
+                        "
+                    >
+                        ${formatTime(
+                            activeTest.remainingSeconds
+                        )}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                style="
+                    margin:12px 0 18px;
+                    padding:10px 12px;
+                    border-radius:10px;
+                    background:rgba(255,255,255,.06);
+                    border:1px solid rgba(255,255,255,.1);
+                    text-align:center;
+                "
+            >
+
                 <strong>
-                    ${activeTest.duration} min
+                    ${
+                        activeTest.questions.length
+                    }
+                    Questions
                 </strong>
+
+                <span
+                    style="
+                        opacity:.7;
+                        margin-left:8px;
+                    "
+                >
+                    Answer each question below
+                </span>
 
             </div>
 
@@ -764,83 +1223,125 @@ function showTestRunner(){
                 class="test-question-list"
             >
 
-                ${activeTest.questions
-                    .map(
-                        (
-                            question,
-                            index
-                        ) => `
+                ${
+                    activeTest.questions
+                        .map(
+                            (
+                                question,
+                                index
+                            ) => {
 
-                            <div
-                                class="test-question"
-                            >
-
-                                <strong>
-                                    Q${index + 1}.
-                                </strong>
-
-                                <p>
-                                    ${escapeHtml(
-                                        question.text ||
-                                        question.question ||
-                                        "Question"
-                                    )}
-                                </p>
+                                const questionText =
+                                    getQuestionText(
+                                        question
+                                    );
 
 
-                                <div
-                                    class="test-answer-row"
-                                >
+                                return `
 
-                                    <button
-                                        type="button"
-                                        data-answer="correct"
-                                        data-index="${index}"
+                                    <div
+                                        class="test-question"
+                                        data-question="${index}"
                                     >
-                                        ✓ I know this
-                                    </button>
+
+                                        <div
+                                            style="
+                                                display:flex;
+                                                gap:8px;
+                                                align-items:flex-start;
+                                            "
+                                        >
+
+                                            <strong>
+                                                Q${index + 1}.
+                                            </strong>
+
+                                            <p
+                                                style="
+                                                    margin:0;
+                                                    line-height:1.6;
+                                                "
+                                            >
+                                                ${escapeHtml(
+                                                    questionText
+                                                )}
+                                            </p>
+
+                                        </div>
 
 
-                                    <button
-                                        type="button"
-                                        data-answer="wrong"
-                                        data-index="${index}"
-                                    >
-                                        ✗ I need revision
-                                    </button>
+                                        <div
+                                            class="test-answer-row"
+                                            style="
+                                                margin-top:14px;
+                                            "
+                                        >
 
-                                </div>
+                                            <button
+                                                type="button"
+                                                data-answer="correct"
+                                                data-index="${index}"
+                                            >
+                                                ✓ I know this
+                                            </button>
 
-                            </div>
 
-                        `
-                    )
-                    .join("")}
+                                            <button
+                                                type="button"
+                                                data-answer="wrong"
+                                                data-index="${index}"
+                                            >
+                                                ✗ I need revision
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                `;
+
+                            }
+                        )
+                        .join("")
+                }
 
             </div>
 
 
-            <button
-                id="submitCustomTest"
-                class="primary"
-                type="button"
+            <div
+                style="
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                    margin-top:18px;
+                "
             >
-                Submit Test
-            </button>
+
+                <button
+                    id="submitCustomTest"
+                    class="primary"
+                    type="button"
+                >
+                    Submit Test
+                </button>
 
 
-            <button
-                id="cancelCustomTest"
-                class="outline"
-                type="button"
-            >
-                Exit Test
-            </button>
+                <button
+                    id="cancelCustomTest"
+                    class="outline"
+                    type="button"
+                >
+                    Exit Test
+                </button>
+
+            </div>
 
         </div>
 
     `;
 
+
+    /* ANSWER BUTTONS */
 
     runner
         .querySelectorAll(
@@ -855,12 +1356,14 @@ function showTestRunner(){
 
                         const index =
                             Number(
-                                button.dataset.index
+                                button.dataset
+                                    .index
                             );
 
 
                         const answer =
-                            button.dataset.answer;
+                            button.dataset
+                                .answer;
 
 
                         activeTest.answers[
@@ -869,17 +1372,23 @@ function showTestRunner(){
                             answer;
 
 
-                        button
-                            .parentElement
+                        const row =
+                            button.parentElement;
+
+
+                        row
                             .querySelectorAll(
                                 "button"
                             )
                             .forEach(
-                                item =>
+                                item => {
+
                                     item.classList
                                         .remove(
                                             "selected"
-                                        )
+                                        );
+
+                                }
                             );
 
 
@@ -894,52 +1403,74 @@ function showTestRunner(){
         );
 
 
+    /* SUBMIT */
+
     $("submitCustomTest")
         ?.addEventListener(
             "click",
-            finishTest
+            () =>
+                finishTest(false)
         );
 
+
+    /* EXIT */
 
     $("cancelCustomTest")
         ?.addEventListener(
             "click",
             () => {
 
+                stopTestTimer();
+
+
                 activeTest =
                     null;
 
 
-                runner.classList.add(
-                    "hidden"
-                );
+                runner
+                    .classList
+                    .add(
+                        "hidden"
+                    );
 
             }
         );
 
+
+    /* START REAL TIMER */
+
+    startTestTimer();
 }
 
 
 /* =========================================================
-   FINISH
-   ========================================================= */
+   FINISH TEST
+========================================================= */
 
-function finishTest(){
+function finishTest(
+    timedOut = false
+) {
 
-    if(!activeTest)
+    if (!activeTest)
         return;
+
+
+    stopTestTimer();
 
 
     let correct = 0;
 
 
     activeTest.questions.forEach(
-        (_,index) => {
+        (
+            _,
+            index
+        ) => {
 
-            if(
+            if (
                 activeTest.answers[index] ===
                 "correct"
-            ){
+            ) {
 
                 correct++;
 
@@ -963,11 +1494,30 @@ function finishTest(){
 
     tests.push({
 
-        ...activeTest,
+        id:
+            activeTest.id,
 
-        completed:true,
+        name:
+            activeTest.name,
+
+        subject:
+            activeTest.subject,
+
+        difficulty:
+            activeTest.difficulty,
+
+        duration:
+            activeTest.duration,
+
+        questionCount:
+            activeTest.questions.length,
+
+        completed:
+            true,
 
         score,
+
+        timedOut,
 
         completedAt:
             new Date()
@@ -998,57 +1548,61 @@ function finishTest(){
     renderHistory();
 
 
-    $("testBuilderMessage")
-        &&
-        (
-            $("testBuilderMessage")
-                .textContent =
-                `Test completed. Your score is ${score}%.`
-        );
+    const message =
+        $("testBuilderMessage");
+
+
+    if (message) {
+
+        message.textContent =
+            timedOut
+                ?
+                `Time is up. Your score is ${score}%.`
+                :
+                `Test completed. Your score is ${score}%.`;
+
+    }
 
 }
 
 
 /* =========================================================
    ESCAPE HTML
-   ========================================================= */
+========================================================= */
 
-function escapeHtml(
-    text
-){
+function escapeHtml(text) {
 
     return String(
         text || ""
     )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
 /* =========================================================
    INIT
-   ========================================================= */
+========================================================= */
 
-export function initTests(){
+export function initTests() {
 
     buildTestPanel();
 
@@ -1080,9 +1634,9 @@ export function initTests(){
 
 /* =========================================================
    REFRESH
-   ========================================================= */
+========================================================= */
 
-export function renderTests(){
+export function renderTests() {
 
     populateSubjects();
 
