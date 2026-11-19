@@ -34,6 +34,7 @@ function fill() {
     $("questionSubject").innerHTML =
         subjects.length
             ?
+
             subjects
                 .map(
                     subject =>
@@ -46,12 +47,15 @@ function fill() {
                         `
                 )
                 .join("")
+
             :
+
             `
             <option value="General">
                 General
             </option>
             `;
+
 }
 
 
@@ -61,9 +65,39 @@ function fill() {
 
 function openQuestionModal() {
 
-    $("questionModal")
-        .classList
+    const modal =
+        $("questionModal");
+
+
+    if (!modal)
+        return;
+
+
+    modal.classList
         .remove("hidden");
+
+}
+
+
+/* =====================================================
+   CLOSE QUESTION MODAL
+===================================================== */
+
+function closeQuestionModal() {
+
+    const modal =
+        $("questionModal");
+
+
+    if (!modal)
+        return;
+
+
+    modal.classList
+        .add("hidden");
+
+
+    resetQuestionForm();
 
 }
 
@@ -78,13 +112,18 @@ function resetQuestionForm() {
         null;
 
 
-    $("questionForm")
-        .reset();
+    const form =
+        $("questionForm");
+
+
+    if (form)
+        form.reset();
 
 
     const title =
         $("questionModal")
-            .querySelector("h2");
+            ?.querySelector("h2");
+
 
     if (title) {
 
@@ -96,7 +135,8 @@ function resetQuestionForm() {
 
     const small =
         $("questionModal")
-            .querySelector("small");
+            ?.querySelector("small");
+
 
     if (small) {
 
@@ -108,9 +148,10 @@ function resetQuestionForm() {
 
     const submitButton =
         $("questionForm")
-            .querySelector(
+            ?.querySelector(
                 "button[type='submit']"
             );
+
 
     if (submitButton) {
 
@@ -200,7 +241,8 @@ function editQuestion(id) {
 
     const title =
         $("questionModal")
-            .querySelector("h2");
+            ?.querySelector("h2");
+
 
     if (title) {
 
@@ -212,7 +254,8 @@ function editQuestion(id) {
 
     const small =
         $("questionModal")
-            .querySelector("small");
+            ?.querySelector("small");
+
 
     if (small) {
 
@@ -224,9 +267,10 @@ function editQuestion(id) {
 
     const submitButton =
         $("questionForm")
-            .querySelector(
+            ?.querySelector(
                 "button[type='submit']"
             );
+
 
     if (submitButton) {
 
@@ -254,11 +298,19 @@ export function renderQuestions() {
         );
 
 
+    const searchBox =
+        $("questionSearch");
+
+
     const search =
-        $("questionSearch")
-            .value
-            .trim()
-            .toLowerCase();
+        searchBox
+            ?
+            searchBox
+                .value
+                .trim()
+                .toLowerCase()
+            :
+            "";
 
 
     questions =
@@ -269,14 +321,14 @@ export function renderQuestions() {
                     String(
                         question.text || ""
                     )
-                    .toLowerCase();
+                        .toLowerCase();
 
 
                 const subject =
                     String(
                         question.subject || ""
                     )
-                    .toLowerCase();
+                        .toLowerCase();
 
 
                 const matchesSearch =
@@ -321,7 +373,15 @@ export function renderQuestions() {
         );
 
 
-    $("questionCards").innerHTML =
+    const cards =
+        $("questionCards");
+
+
+    if (!cards)
+        return;
+
+
+    cards.innerHTML =
         questions.length
 
             ?
@@ -358,10 +418,12 @@ export function renderQuestions() {
                                 <span
                                     class="tag"
                                 >
+
                                     ${esc(
                                         question.tag ||
                                         "REVISION"
                                     )}
+
                                 </span>
 
                             </div>
@@ -370,7 +432,10 @@ export function renderQuestions() {
                             <!-- ANSWER -->
 
                             <div
-                                class="question-answer-box hidden"
+                                class="
+                                    question-answer-box
+                                    hidden
+                                "
                                 id="answer-${question.id}"
                             >
 
@@ -384,10 +449,12 @@ export function renderQuestions() {
                                 <div
                                     class="question-answer"
                                 >
+
                                     ${esc(
                                         question.answer ||
                                         "No answer added."
                                     )}
+
                                 </div>
 
                             </div>
@@ -455,11 +522,15 @@ export function renderQuestions() {
                                     type="button"
                                     data-qdone="${question.id}"
                                 >
+
                                     ${
                                         question.done
-                                            ? "✅ Done"
-                                            : "○ Mark Done"
+                                            ?
+                                            "✅ Done"
+                                            :
+                                            "○ Mark Done"
                                     }
+
                                 </button>
 
 
@@ -501,6 +572,7 @@ export function renderQuestions() {
                 No questions found.
             </div>
             `;
+
 }
 
 
@@ -545,31 +617,85 @@ function showRevision() {
    INITIALIZE
 ===================================================== */
 
-export function initQuestions(refresh) {
+export function initQuestions(
+    refresh
+) {
 
 
     /* -------------------------------------------------
        ADD QUESTION
     ------------------------------------------------- */
 
-    $("addQuestion").onclick =
-        () => {
+    $("addQuestion")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            resetQuestionForm();
+                resetQuestionForm();
 
-            fill();
+                fill();
 
-            openQuestionModal();
+                openQuestionModal();
 
-        };
+            }
+        );
+
+
+    /* -------------------------------------------------
+       CLOSE QUESTION MODAL
+    ------------------------------------------------- */
+
+    document
+        .querySelectorAll(
+            '[data-close="questionModal"]'
+        )
+        .forEach(
+            button => {
+
+                button.onclick =
+                    event => {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+                        closeQuestionModal();
+
+                    };
+
+            }
+        );
+
+
+    /*
+       Extra fallback in case the close button
+       is specifically identified by ID.
+    */
+
+    $("closeQuestion")
+        ?.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                closeQuestionModal();
+
+            }
+        );
 
 
     /* -------------------------------------------------
        SEARCH
     ------------------------------------------------- */
 
-    $("questionSearch").oninput =
-        renderQuestions;
+    $("questionSearch")
+        ?.addEventListener(
+            "input",
+            renderQuestions
+        );
 
 
     /* -------------------------------------------------
@@ -577,7 +703,9 @@ export function initQuestions(refresh) {
     ------------------------------------------------- */
 
     document
-        .querySelectorAll(".filter")
+        .querySelectorAll(
+            ".filter"
+        )
         .forEach(
             button => {
 
@@ -598,12 +726,13 @@ export function initQuestions(refresh) {
 
 
                         button.classList
-                            .add("active");
+                            .add(
+                                "active"
+                            );
 
 
                         filter =
-                            button
-                                .dataset
+                            button.dataset
                                 .filter;
 
 
@@ -619,454 +748,456 @@ export function initQuestions(refresh) {
        ALL QUESTIONS
     ------------------------------------------------- */
 
-    $("showAllQuestions").onclick =
-        () => {
+    $("showAllQuestions")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            view =
-                "all";
-
-
-            document
-                .querySelectorAll(".tab")
-                .forEach(
-                    x =>
-                        x.classList
-                            .remove("active")
-                );
+                view =
+                    "all";
 
 
-            $("showAllQuestions")
-                .classList
-                .add("active");
+                document
+                    .querySelectorAll(
+                        ".tab"
+                    )
+                    .forEach(
+                        x =>
+                            x.classList
+                                .remove(
+                                    "active"
+                                )
+                    );
 
 
-            renderQuestions();
+                $("showAllQuestions")
+                    ?.classList
+                    .add(
+                        "active"
+                    );
 
-        };
+
+                renderQuestions();
+
+            }
+        );
 
 
     /* -------------------------------------------------
        PYQ
     ------------------------------------------------- */
 
-    $("showPYQQuestions").onclick =
-        () => {
+    $("showPYQQuestions")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            view =
-                "pyq";
-
-
-            document
-                .querySelectorAll(".tab")
-                .forEach(
-                    x =>
-                        x.classList
-                            .remove("active")
-                );
+                view =
+                    "pyq";
 
 
-            $("showPYQQuestions")
-                .classList
-                .add("active");
+                document
+                    .querySelectorAll(
+                        ".tab"
+                    )
+                    .forEach(
+                        x =>
+                            x.classList
+                                .remove(
+                                    "active"
+                                )
+                    );
 
 
-            renderQuestions();
+                $("showPYQQuestions")
+                    ?.classList
+                    .add(
+                        "active"
+                    );
 
-        };
+
+                renderQuestions();
+
+            }
+        );
 
 
     /* -------------------------------------------------
        MISTAKES
     ------------------------------------------------- */
 
-    $("showMistakes").onclick =
-        () => {
+    $("showMistakes")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            view =
-                "mistake";
-
-
-            document
-                .querySelectorAll(".tab")
-                .forEach(
-                    x =>
-                        x.classList
-                            .remove("active")
-                );
+                view =
+                    "mistake";
 
 
-            $("showMistakes")
-                .classList
-                .add("active");
+                document
+                    .querySelectorAll(
+                        ".tab"
+                    )
+                    .forEach(
+                        x =>
+                            x.classList
+                                .remove(
+                                    "active"
+                                )
+                    );
 
 
-            renderQuestions();
+                $("showMistakes")
+                    ?.classList
+                    .add(
+                        "active"
+                    );
 
-        };
+
+                renderQuestions();
+
+            }
+        );
 
 
     /* -------------------------------------------------
        ADD SUBJECT FROM QUESTION BANK
     ------------------------------------------------- */
 
-    $("addSubjectFromQuestion")?.addEventListener(
-        "click",
-        () => {
+    $("addSubjectFromQuestion")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            $("questionNewSubjectBox")
-                .classList
-                .remove("hidden");
+                $("questionNewSubjectBox")
+                    ?.classList
+                    .remove(
+                        "hidden"
+                    );
 
 
-            $("questionNewSubjectName")
-                .focus();
+                $("questionNewSubjectName")
+                    ?.focus();
 
-        }
-    );
+            }
+        );
 
 
     /* -------------------------------------------------
        CANCEL NEW SUBJECT
     ------------------------------------------------- */
 
-    $("cancelQuestionSubject")?.addEventListener(
-        "click",
-        () => {
+    $("cancelQuestionSubject")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            $("questionNewSubjectBox")
-                .classList
-                .add("hidden");
+                $("questionNewSubjectBox")
+                    ?.classList
+                    .add(
+                        "hidden"
+                    );
 
 
-            $("questionNewSubjectName")
-                .value = "";
+                if (
+                    $("questionNewSubjectName")
+                ) {
 
-        }
-    );
+                    $("questionNewSubjectName")
+                        .value =
+                        "";
+
+                }
+
+            }
+        );
 
 
     /* -------------------------------------------------
        SAVE NEW SUBJECT
     ------------------------------------------------- */
 
-    $("saveQuestionSubject")?.addEventListener(
-        "click",
-        () => {
+    $("saveQuestionSubject")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            const name =
-                $("questionNewSubjectName")
-                    .value
-                    .trim();
-
-
-            if (!name)
-                return;
+                const name =
+                    $("questionNewSubjectName")
+                        ?.value
+                        ?.trim();
 
 
-            const subjects =
-                get(
-                    "subjects",
-                    []
-                );
+                if (!name)
+                    return;
 
 
-            const existing =
-                subjects.find(
-                    subject =>
-                        String(
-                            subject.name
-                        )
-                        .toLowerCase()
-                        ===
-                        name.toLowerCase()
-                );
-
-
-            if (existing) {
-
-                fill();
-
-
-                $("questionSubject")
-                    .value =
-                    existing.name;
-
-            }
-            else {
-
-                subjects.push({
-
-                    id:
-                        uid(),
-
-                    name,
-
-                    color:
-                        "#4f7cff",
-
-                    chapters:
+                const subjects =
+                    get(
+                        "subjects",
                         []
-
-                });
-
-
-                set(
-                    "subjects",
-                    subjects
-                );
+                    );
 
 
-                fill();
+                const existing =
+                    subjects.find(
+                        subject =>
+                            String(
+                                subject.name
+                            )
+                                .toLowerCase()
+                            ===
+                            name
+                                .toLowerCase()
+                    );
 
 
-                $("questionSubject")
+                if (existing) {
+
+                    fill();
+
+
+                    $("questionSubject")
+                        .value =
+                        existing.name;
+
+                }
+                else {
+
+                    subjects.push({
+
+                        id:
+                            uid(),
+
+                        name,
+
+                        color:
+                            "#4f7cff",
+
+                        chapters:
+                            []
+
+                    });
+
+
+                    set(
+                        "subjects",
+                        subjects
+                    );
+
+
+                    fill();
+
+
+                    $("questionSubject")
+                        .value =
+                        name;
+
+                }
+
+
+                $("questionNewSubjectName")
                     .value =
-                    name;
+                    "";
+
+
+                $("questionNewSubjectBox")
+                    ?.classList
+                    .add(
+                        "hidden"
+                    );
+
+
+                if (
+                    typeof refresh ===
+                    "function"
+                ) {
+
+                    refresh();
+
+                }
 
             }
-
-
-            $("questionNewSubjectName")
-                .value = "";
-
-
-            $("questionNewSubjectBox")
-                .classList
-                .add("hidden");
-
-
-            if (
-                typeof refresh ===
-                "function"
-            ) {
-
-                refresh();
-
-            }
-
-        }
-    );
+        );
 
 
     /* =================================================
        SAVE / UPDATE QUESTION
     ================================================= */
 
-    $("questionForm").onsubmit =
-        event => {
+    $("questionForm")
+        ?.addEventListener(
+            "submit",
+            event => {
 
-            event.preventDefault();
-
-
-            const text =
-                $("questionText")
-                    .value
-                    .trim();
+                event.preventDefault();
 
 
-            const answer =
-                $("questionAnswer")
-                    ? 
+                const text =
+                    $("questionText")
+                        ?.value
+                        ?.trim()
+                        || "";
+
+
+                const answer =
                     $("questionAnswer")
-                        .value
-                        .trim()
-                    :
-                    "";
+                        ?
+                        $("questionAnswer")
+                            .value
+                            .trim()
+                        :
+                        "";
 
 
-            if (!text)
-                return;
+                if (!text)
+                    return;
 
 
-            const questions =
-                get(
-                    "questions",
-                    []
-                );
-
-
-            /* -----------------------------------------
-               EDIT EXISTING QUESTION
-            ----------------------------------------- */
-
-            if (editingQuestionId) {
-
-                const question =
-                    questions.find(
-                        item =>
-                            item.id ===
-                            editingQuestionId
+                const questions =
+                    get(
+                        "questions",
+                        []
                     );
 
 
-                if (question) {
+                /* -----------------------------------------
+                   EDIT EXISTING QUESTION
+                ----------------------------------------- */
 
-                    question.text =
-                        text;
+                if (editingQuestionId) {
 
-
-                    question.answer =
-                        answer;
-
-
-                    question.subject =
-                        $("questionSubject")
-                            .value;
-
-
-                    question.topic =
-                        $("questionTopic")
-                            .value
-                            .trim();
+                    const question =
+                        questions.find(
+                            item =>
+                                item.id ===
+                                editingQuestionId
+                        );
 
 
-                    question.tag =
-                        $("questionTag")
-                            .value;
+                    if (question) {
+
+                        question.text =
+                            text;
 
 
-                    question.difficulty =
-                        $("questionDifficulty")
-                            .value;
+                        question.answer =
+                            answer;
 
 
-                    question.important =
-                        $("questionImportant")
-                            ? 
+                        question.subject =
+                            $("questionSubject")
+                                .value;
+
+
+                        question.topic =
+                            $("questionTopic")
+                                .value
+                                .trim();
+
+
+                        question.tag =
+                            $("questionTag")
+                                .value;
+
+
+                        question.difficulty =
+                            $("questionDifficulty")
+                                .value;
+
+
+                        question.important =
                             $("questionImportant")
-                                .checked
-                            :
-                            false;
+                                ?
+                                $("questionImportant")
+                                    .checked
+                                :
+                                false;
+
+                    }
+
+                }
+
+
+                /* -----------------------------------------
+                   ADD NEW QUESTION
+                ----------------------------------------- */
+
+                else {
+
+                    questions.push({
+
+                        id:
+                            uid(),
+
+                        text,
+
+                        answer,
+
+                        subject:
+                            $("questionSubject")
+                                .value,
+
+                        topic:
+                            $("questionTopic")
+                                .value
+                                .trim(),
+
+                        tag:
+                            $("questionTag")
+                                .value,
+
+                        difficulty:
+                            $("questionDifficulty")
+                                .value,
+
+                        done:
+                            false,
+
+                        important:
+                            $("questionImportant")
+                                ?
+                                $("questionImportant")
+                                    .checked
+                                :
+                                false
+
+                    });
+
+                }
+
+
+                set(
+                    "questions",
+                    questions
+                );
+
+
+                editingQuestionId =
+                    null;
+
+
+                event.target.reset();
+
+
+                closeQuestionModal();
+
+
+                renderQuestions();
+
+
+                if (
+                    typeof refresh ===
+                    "function"
+                ) {
+
+                    refresh();
 
                 }
 
             }
-
-            /* -----------------------------------------
-               ADD NEW QUESTION
-            ----------------------------------------- */
-
-            else {
-
-                questions.push({
-
-                    id:
-                        uid(),
-
-                    text,
-
-                    answer,
-
-                    subject:
-                        $("questionSubject")
-                            .value,
-
-                    topic:
-                        $("questionTopic")
-                            .value
-                            .trim(),
-
-                    tag:
-                        $("questionTag")
-                            .value,
-
-                    difficulty:
-                        $("questionDifficulty")
-                            .value,
-
-                    done:
-                        false,
-
-                    important:
-                        $("questionImportant")
-                            ?
-                            $("questionImportant")
-                                .checked
-                            :
-                            false
-
-                });
-
-            }
-
-
-            set(
-                "questions",
-                questions
-            );
-
-
-            /* Reset editing mode */
-
-            editingQuestionId =
-                null;
-
-
-            /* Reset form */
-
-            event.target.reset();
-
-
-            /* Close modal */
-
-            $("questionModal")
-                .classList
-                .add("hidden");
-
-
-            /* Reset modal title */
-
-            const title =
-                $("questionModal")
-                    .querySelector("h2");
-
-            if (title) {
-
-                title.textContent =
-                    "Add a revision question";
-
-            }
-
-
-            const small =
-                $("questionModal")
-                    .querySelector("small");
-
-            if (small) {
-
-                small.textContent =
-                    "NEW QUESTION";
-
-            }
-
-
-            const submitButton =
-                $("questionForm")
-                    .querySelector(
-                        "button[type='submit']"
-                    );
-
-            if (submitButton) {
-
-                submitButton.textContent =
-                    "Save Question";
-
-            }
-
-
-            renderQuestions();
-
-
-            if (
-                typeof refresh ===
-                "function"
-            ) {
-
-                refresh();
-
-            }
-
-        };
+        );
 
 
     /* =================================================
@@ -1077,15 +1208,17 @@ export function initQuestions(refresh) {
         "click",
         event => {
 
+            let id;
+
 
             /* -----------------------------------------
                SHOW / HIDE ANSWER
             ----------------------------------------- */
 
-            let id =
+            id =
                 event.target
-                    .dataset
-                    .qanswer;
+                    ?.dataset
+                    ?.qanswer;
 
 
             if (id) {
@@ -1115,6 +1248,8 @@ export function initQuestions(refresh) {
                         :
                         "🙈 Hide Answer";
 
+                return;
+
             }
 
 
@@ -1124,13 +1259,15 @@ export function initQuestions(refresh) {
 
             id =
                 event.target
-                    .dataset
-                    .qedit;
+                    ?.dataset
+                    ?.qedit;
 
 
             if (id) {
 
                 editQuestion(id);
+
+                return;
 
             }
 
@@ -1141,8 +1278,8 @@ export function initQuestions(refresh) {
 
             id =
                 event.target
-                    .dataset
-                    .qdone;
+                    ?.dataset
+                    ?.qdone;
 
 
             if (id) {
@@ -1187,6 +1324,9 @@ export function initQuestions(refresh) {
 
                 }
 
+
+                return;
+
             }
 
 
@@ -1196,8 +1336,8 @@ export function initQuestions(refresh) {
 
             id =
                 event.target
-                    .dataset
-                    .qmistake;
+                    ?.dataset
+                    ?.qmistake;
 
 
             if (id) {
@@ -1221,6 +1361,7 @@ export function initQuestions(refresh) {
                     question.tag =
                         "MISTAKE";
 
+
                     question.done =
                         false;
 
@@ -1235,6 +1376,8 @@ export function initQuestions(refresh) {
 
                 renderQuestions();
 
+                return;
+
             }
 
 
@@ -1244,8 +1387,8 @@ export function initQuestions(refresh) {
 
             id =
                 event.target
-                    .dataset
-                    .qdelete;
+                    ?.dataset
+                    ?.qdelete;
 
 
             if (id) {
@@ -1254,8 +1397,32 @@ export function initQuestions(refresh) {
                     get(
                         "questions",
                         []
-                    )
-                    .filter(
+                    );
+
+
+                const question =
+                    questions.find(
+                        x =>
+                            x.id === id
+                    );
+
+
+                if (!question)
+                    return;
+
+
+                const confirmed =
+                    confirm(
+                        "Delete this question?"
+                    );
+
+
+                if (!confirmed)
+                    return;
+
+
+                const updated =
+                    questions.filter(
                         x =>
                             x.id !== id
                     );
@@ -1263,7 +1430,7 @@ export function initQuestions(refresh) {
 
                 set(
                     "questions",
-                    questions
+                    updated
                 );
 
 
@@ -1279,6 +1446,9 @@ export function initQuestions(refresh) {
 
                 }
 
+
+                return;
+
             }
 
 
@@ -1288,8 +1458,8 @@ export function initQuestions(refresh) {
 
             id =
                 event.target
-                    .dataset
-                    .qflash;
+                    ?.dataset
+                    ?.qflash;
 
 
             if (id) {
@@ -1315,8 +1485,10 @@ export function initQuestions(refresh) {
 
 
                 $("flashModal")
-                    .classList
-                    .remove("hidden");
+                    ?.classList
+                    .remove(
+                        "hidden"
+                    );
 
             }
 
@@ -1328,237 +1500,261 @@ export function initQuestions(refresh) {
        QUICK REVISION
     ================================================= */
 
-    $("quickRevision").onclick =
-        () => {
+    $("quickRevision")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            revision =
-                get(
-                    "questions",
-                    []
-                )
-                .filter(
-                    x =>
-                        !x.done
-                );
+                revision =
+                    get(
+                        "questions",
+                        []
+                    )
+                    .filter(
+                        x =>
+                            !x.done
+                    );
 
 
-            if (!revision.length) {
+                if (!revision.length) {
 
-                alert(
-                    "No pending questions."
-                );
+                    alert(
+                        "No pending questions."
+                    );
 
-                return;
+
+                    return;
+
+                }
+
+
+                ri =
+                    0;
+
+
+                showRevision();
 
             }
-
-
-            ri =
-                0;
-
-
-            showRevision();
-
-        };
+        );
 
 
     /* =================================================
        EXAM REVISION
     ================================================= */
 
-    $("examRevision").onclick =
-        () => {
+    $("examRevision")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            revision =
-                get(
-                    "questions",
-                    []
-                )
-                .filter(
-                    x =>
-                        x.tag === "PYQ"
-                        ||
-                        x.tag === "IMPORTANT"
-                );
+                revision =
+                    get(
+                        "questions",
+                        []
+                    )
+                    .filter(
+                        x =>
+                            x.tag === "PYQ"
+                            ||
+                            x.tag === "IMPORTANT"
+                    );
 
 
-            if (!revision.length) {
+                if (!revision.length) {
 
-                alert(
-                    "No exam questions saved."
-                );
+                    alert(
+                        "No exam questions saved."
+                    );
 
-                return;
+
+                    return;
+
+                }
+
+
+                ri =
+                    0;
+
+
+                showRevision();
 
             }
-
-
-            ri =
-                0;
-
-
-            showRevision();
-
-        };
+        );
 
 
     /* =================================================
        REVISION PREVIOUS
     ================================================= */
 
-    $("revisionPrev").onclick =
-        () => {
+    $("revisionPrev")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            if (
-                ri > 0
-            ) {
+                if (
+                    ri > 0
+                ) {
 
-                ri--;
+                    ri--;
 
-                showRevision();
+                    showRevision();
+
+                }
 
             }
-
-        };
+        );
 
 
     /* =================================================
        REVISION NEXT
     ================================================= */
 
-    $("revisionNext").onclick =
-        () => {
+    $("revisionNext")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            if (
-                ri <
-                revision.length - 1
-            ) {
+                if (
+                    ri <
+                    revision.length - 1
+                ) {
 
-                ri++;
+                    ri++;
 
-                showRevision();
+                    showRevision();
+
+                }
 
             }
-
-        };
+        );
 
 
     /* =================================================
        REVISE AGAIN
     ================================================= */
 
-    $("revisionAgain").onclick =
-        () => {
+    $("revisionAgain")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            showRevision();
+                showRevision();
 
-        };
+            }
+        );
 
 
     /* =================================================
        I KNOW THIS
     ================================================= */
 
-    $("revisionKnow").onclick =
-        () => {
+    $("revisionKnow")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            if (!revision[ri])
-                return;
+                if (!revision[ri])
+                    return;
 
 
-            const questions =
-                get(
+                const questions =
+                    get(
+                        "questions",
+                        []
+                    );
+
+
+                const question =
+                    questions.find(
+                        x =>
+                            x.id ===
+                            revision[ri].id
+                    );
+
+
+                if (question) {
+
+                    question.done =
+                        true;
+
+                }
+
+
+                set(
                     "questions",
-                    []
+                    questions
                 );
 
 
-            const question =
-                questions.find(
-                    x =>
-                        x.id ===
-                        revision[ri].id
+                revision.splice(
+                    ri,
+                    1
                 );
 
 
-            if (question) {
+                if (
+                    !revision.length
+                ) {
 
-                question.done =
-                    true;
-
-            }
-
-
-            set(
-                "questions",
-                questions
-            );
+                    $("revisionModal")
+                        ?.classList
+                        .add(
+                            "hidden"
+                        );
 
 
-            revision.splice(
-                ri,
-                1
-            );
+                    renderQuestions();
 
 
-            if (
-                !revision.length
-            ) {
+                    return;
 
-                $("revisionModal")
-                    .classList
-                    .add("hidden");
+                }
+
+
+                ri =
+                    Math.min(
+                        ri,
+                        revision.length - 1
+                    );
+
+
+                showRevision();
 
 
                 renderQuestions();
 
-
-                return;
-
             }
-
-
-            ri =
-                Math.min(
-                    ri,
-                    revision.length - 1
-                );
-
-
-            showRevision();
-
-
-            renderQuestions();
-
-        };
+        );
 
 
     /* =================================================
        FLASHCARD
     ================================================= */
 
-    $("flashFlip").onclick =
-        () => {
+    $("flashFlip")
+        ?.addEventListener(
+            "click",
+            () => {
 
-            if (!flash)
-                return;
+                if (!flash)
+                    return;
 
 
-            if (flash.answer) {
+                if (flash.answer) {
 
-                $("flashContent")
-                    .textContent =
-                    `Answer:\n\n${flash.answer}`;
+                    $("flashContent")
+                        .textContent =
+                        `Answer:\n\n${flash.answer}`;
 
-            }
-            else {
+                }
+                else {
 
-                $("flashContent")
-                    .textContent =
-                    `Subject: ${
-                        flash.subject ||
-                        "General"
-                    }
+                    $("flashContent")
+                        .textContent =
+                        `Subject: ${
+                            flash.subject ||
+                            "General"
+                        }
 
 Topic: ${
     flash.topic ||
@@ -1570,8 +1766,18 @@ Difficulty: ${
     "Medium"
 }`;
 
-            }
+                }
 
-        };
+            }
+        );
+
+
+    /* =================================================
+       INITIAL RENDER
+    ================================================= */
+
+    fill();
+
+    renderQuestions();
 
 }

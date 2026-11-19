@@ -3593,21 +3593,66 @@ body.dark .registration-context{
 .close{
     position:absolute;
 
-    top:10px;
+    top:12px;
+    right:12px;
 
-    right:10px;
+    width:34px;
+    height:34px;
 
-    width:29px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    height:29px;
+    padding:0;
 
-    border:0;
+    border:1px solid var(--border);
 
-    border-radius:7px;
+    border-radius:9px;
 
     background:var(--soft);
 
-    color:var(--muted);
+    color:var(--text);
+
+    font-size:22px;
+    font-weight:800;
+
+    line-height:1;
+
+    cursor:pointer;
+
+    opacity:1;
+    visibility:visible;
+
+    z-index:200;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+
+.close:hover{
+    background:var(--primary);
+    color:#fff;
+
+    transform:scale(1.05);
+}
+
+
+body.dark .close{
+    background:#1b3556;
+
+    color:#fff;
+
+    border-color:#3a5d79;
+}
+
+
+body.dark .close:hover{
+    background:var(--primary);
+
+    color:#fff;
 }
 
 
