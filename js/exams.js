@@ -1,55 +1,134 @@
 /* =====================================================
    SYNAPTIQ - EXAM HUB
-   Modular version for examsPage / recommendedExams /
-   examDirectory / examCards
+   School Boards + Competitive Exams
    ===================================================== */
 
-const $ = (id) => document.getElementById(id);
+const $ = (id) =>
+    document.getElementById(id);
+
+
+/* =====================================================
+   STORAGE
+===================================================== */
 
 const getArray = (key) => {
+
     try {
-        const value = JSON.parse(localStorage.getItem(key));
-        return Array.isArray(value) ? value : [];
+
+        const value =
+            JSON.parse(
+                localStorage.getItem(key)
+            );
+
+        return Array.isArray(value)
+            ? value
+            : [];
+
     } catch {
+
         return [];
+
     }
+
 };
 
-const saveArray = (key, value) => {
-    localStorage.setItem(key, JSON.stringify(value));
+
+const saveArray = (
+    key,
+    value
+) => {
+
+    localStorage.setItem(
+        key,
+        JSON.stringify(value)
+    );
+
 };
 
-const esc = (value) => String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+const esc = (
+    value
+) =>
+    String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
 
 const makeId = () =>
     Date.now().toString(36) +
-    Math.random().toString(36).slice(2);
+    Math.random()
+        .toString(36)
+        .slice(2);
 
-const normalizeURL = (url) => {
-    const value = String(url ?? "").trim();
 
-    if (!value) return "";
+const normalizeURL = (
+    url
+) => {
 
-    return /^https?:\/\//i.test(value)
+    const value =
+        String(
+            url ?? ""
+        ).trim();
+
+
+    if (!value)
+        return "";
+
+
+    return /^https?:\/\//i.test(
+        value
+    )
         ? value
         : `https://${value}`;
+
 };
 
-const formatDate = (value) => {
-    if (!value) return "Date not set";
 
-    const d = new Date(
-        `${value}T00:00:00`
-    );
+const formatDate = (
+    value
+) => {
 
-    if (Number.isNaN(d.getTime())) {
+    if (!value)
         return "Date not set";
-    }
+
+
+    const d =
+        new Date(
+            `${value}T00:00:00`
+        );
+
+
+    if (
+        Number.isNaN(
+            d.getTime()
+        )
+    )
+        return "Date not set";
+
 
     return d.toLocaleDateString(
         "en-IN",
@@ -59,45 +138,92 @@ const formatDate = (value) => {
             year: "numeric"
         }
     );
+
 };
 
-const daysLeft = (value) => {
 
-    if (!value) return null;
+const daysLeft = (
+    value
+) => {
 
-    const now = new Date();
-
-    const today = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
-    );
-
-    const target = new Date(
-        `${value}T00:00:00`
-    );
-
-    if (Number.isNaN(target.getTime())) {
+    if (!value)
         return null;
-    }
 
-    const targetDay = new Date(
-        target.getFullYear(),
-        target.getMonth(),
-        target.getDate()
-    );
+
+    const now =
+        new Date();
+
+
+    const today =
+        new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+
+
+    const target =
+        new Date(
+            `${value}T00:00:00`
+        );
+
+
+    if (
+        Number.isNaN(
+            target.getTime()
+        )
+    )
+        return null;
+
+
+    const targetDay =
+        new Date(
+            target.getFullYear(),
+            target.getMonth(),
+            target.getDate()
+        );
+
 
     return Math.ceil(
-        (targetDay - today) / 86400000
+        (
+            targetDay - today
+        ) / 86400000
     );
+
 };
 
 
 /* =====================================================
    OFFICIAL PORTALS
-   ===================================================== */
+===================================================== */
 
 const OFFICIAL_PORTALS = [
+
+    /* SCHOOL BOARDS */
+
+    {
+        name: "CBSE",
+        short: "CBSE",
+        category: "School Boards",
+        url: "https://www.cbse.gov.in/"
+    },
+
+    {
+        name: "CISCE",
+        short: "CISCE",
+        category: "School Boards",
+        url: "https://cisce.org/"
+    },
+
+    {
+        name: "NIOS",
+        short: "NIOS",
+        category: "School Boards",
+        url: "https://nios.ac.in/"
+    },
+
+
+    /* COMPETITIVE */
 
     {
         name: "GATE 2027",
@@ -208,18 +334,893 @@ const OFFICIAL_PORTALS = [
 
 
 /* =====================================================
-   COMPLETE EXAM DIRECTORY
-   ===================================================== */
+   EXAM DIRECTORY
+===================================================== */
 
 const EXAM_DIRECTORY = [
 
-    /* ENGINEERING */
+    /* =================================================
+       SCHOOL BOARDS
+    ================================================= */
+
+    {
+        name: "CBSE",
+
+        fullName:
+            "Central Board of Secondary Education - Classes X and XII",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "cbse",
+            "central",
+            "board",
+            "school",
+            "class 10",
+            "class x",
+            "class 12",
+            "class xii"
+        ],
+
+        official:
+            "https://www.cbse.gov.in/",
+
+        pyq:
+            "https://www.cbse.gov.in/"
+    },
+
+
+    {
+        name: "ICSE",
+
+        fullName:
+            "Indian Certificate of Secondary Education - Class X",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "icse",
+            "cisce",
+            "school",
+            "class 10",
+            "class x",
+            "board"
+        ],
+
+        official:
+            "https://cisce.org/",
+
+        pyq:
+            "https://cisce.org/"
+    },
+
+
+    {
+        name: "ISC",
+
+        fullName:
+            "Indian School Certificate - Class XII",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "isc",
+            "cisce",
+            "school",
+            "class 12",
+            "class xii",
+            "board"
+        ],
+
+        official:
+            "https://cisce.org/",
+
+        pyq:
+            "https://cisce.org/"
+    },
+
+
+    {
+        name: "NIOS",
+
+        fullName:
+            "National Institute of Open Schooling - Secondary and Senior Secondary",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "nios",
+            "open school",
+            "secondary",
+            "senior secondary",
+            "class 10",
+            "class 12",
+            "board"
+        ],
+
+        official:
+            "https://nios.ac.in/",
+
+        pyq:
+            "https://nios.ac.in/"
+    },
+
+
+    {
+        name: "Andhra Pradesh Board",
+
+        fullName:
+            "Board of Secondary Education, Andhra Pradesh",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "andhra pradesh",
+            "ap",
+            "bseap",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://bse.ap.gov.in/",
+
+        pyq:
+            "https://bse.ap.gov.in/"
+    },
+
+
+    {
+        name: "Arunachal Pradesh School Education",
+
+        fullName:
+            "Department of School Education, Government of Arunachal Pradesh",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "arunachal pradesh",
+            "school",
+            "state board",
+            "secondary"
+        ],
+
+        official:
+            "https://education.arunachal.gov.in/",
+
+        pyq:
+            "https://education.arunachal.gov.in/"
+    },
+
+
+    {
+        name: "Assam Board",
+
+        fullName:
+            "Board of Secondary Education, Assam / Assam Higher Secondary Education Council",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "assam",
+            "seba",
+            "ahsec",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://site.sebaonline.org/",
+
+        pyq:
+            "https://ahsec.assam.gov.in/"
+    },
+
+
+    {
+        name: "Bihar Board",
+
+        fullName:
+            "Bihar School Examination Board",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "bihar",
+            "bseb",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://biharboardonline.bihar.gov.in/",
+
+        pyq:
+            "https://biharboardonline.bihar.gov.in/"
+    },
+
+
+    {
+        name: "Chhattisgarh Board",
+
+        fullName:
+            "Chhattisgarh Board of Secondary Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "chhattisgarh",
+            "cgbse",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://cgbse.nic.in/",
+
+        pyq:
+            "https://cgbse.nic.in/"
+    },
+
+
+    {
+        name: "Goa Board",
+
+        fullName:
+            "Goa Board of Secondary and Higher Secondary Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "goa",
+            "gbshse",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://www.gbshse.in/",
+
+        pyq:
+            "https://www.gbshse.in/"
+    },
+
+
+    {
+        name: "Gujarat Board",
+
+        fullName:
+            "Gujarat Secondary and Higher Secondary Education Board",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "gujarat",
+            "gseb",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://www.gseb.org/",
+
+        pyq:
+            "https://www.gseb.org/"
+    },
+
+
+    {
+        name: "Haryana Board",
+
+        fullName:
+            "Board of School Education Haryana",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "haryana",
+            "bseh",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://bseh.org.in/",
+
+        pyq:
+            "https://bseh.org.in/"
+    },
+
+
+    {
+        name: "Himachal Pradesh Board",
+
+        fullName:
+            "Himachal Pradesh Board of School Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "himachal pradesh",
+            "hpbose",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://hpbose.org/",
+
+        pyq:
+            "https://hpbose.org/"
+    },
+
+
+    {
+        name: "Jammu & Kashmir Board",
+
+        fullName:
+            "Jammu & Kashmir Board of School Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "jammu",
+            "kashmir",
+            "jkbose",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://jkbose.nic.in/",
+
+        pyq:
+            "https://jkbose.nic.in/"
+    },
+
+
+    {
+        name: "Jharkhand Board",
+
+        fullName:
+            "Jharkhand Academic Council",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "jharkhand",
+            "jac",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://jac.jharkhand.gov.in/jac/",
+
+        pyq:
+            "https://jac.jharkhand.gov.in/jac/"
+    },
+
+
+    {
+        name: "Karnataka Board",
+
+        fullName:
+            "Karnataka School Examination and Assessment Board",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "karnataka",
+            "kseab",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://kseab.karnataka.gov.in/english",
+
+        pyq:
+            "https://kseab.karnataka.gov.in/english"
+    },
+
+
+    {
+        name: "Kerala Board",
+
+        fullName:
+            "Kerala Board of Public Examination / Higher Secondary Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "kerala",
+            "dhse",
+            "kbpe",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://www.kbpe.org/",
+
+        pyq:
+            "https://www.kbpe.org/"
+    },
+
+
+    {
+        name: "Maharashtra Board",
+
+        fullName:
+            "Maharashtra State Board of Secondary and Higher Secondary Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "maharashtra",
+            "msbshse",
+            "ssc",
+            "hsc",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://mahahsscboard.in/",
+
+        pyq:
+            "https://mahahsscboard.in/"
+    },
+
+
+    {
+        name: "Madhya Pradesh Board",
+
+        fullName:
+            "Board of Secondary Education, Madhya Pradesh",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "madhya pradesh",
+            "mpbse",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://www.mpbse.nic.in/",
+
+        pyq:
+            "https://www.mpbse.nic.in/"
+    },
+
+
+    {
+        name: "Manipur Board",
+
+        fullName:
+            "Board of Secondary Education, Manipur / Council of Higher Secondary Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "manipur",
+            "bsem",
+            "cohsem",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://bsem.nic.in/",
+
+        pyq:
+            "https://cohsem.nic.in/"
+    },
+
+
+    {
+        name: "Meghalaya Board",
+
+        fullName:
+            "Meghalaya Board of School Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "meghalaya",
+            "mbose",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://www.mbose.in/",
+
+        pyq:
+            "https://www.mbose.in/"
+    },
+
+
+    {
+        name: "Mizoram Board",
+
+        fullName:
+            "Mizoram Board of School Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "mizoram",
+            "mbse",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "http://www.mbse-govt.in/",
+
+        pyq:
+            "http://www.mbse-govt.in/"
+    },
+
+
+    {
+        name: "Nagaland Board",
+
+        fullName:
+            "Nagaland Board of School Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "nagaland",
+            "nbse",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://nbsenl.edu.in/",
+
+        pyq:
+            "https://nbsenl.edu.in/"
+    },
+
+
+    {
+        name: "Odisha Board",
+
+        fullName:
+            "Board of Secondary Education, Odisha",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "odisha",
+            "bse",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "http://www.bseodisha.ac.in/",
+
+        pyq:
+            "https://chseodisha.nic.in/"
+    },
+
+
+    {
+        name: "Punjab Board",
+
+        fullName:
+            "Punjab School Education Board",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "punjab",
+            "pseb",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://www.pseb.ac.in/",
+
+        pyq:
+            "https://www.pseb.ac.in/"
+    },
+
+
+    {
+        name: "Rajasthan Board",
+
+        fullName:
+            "Board of Secondary Education, Rajasthan",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "rajasthan",
+            "rbse",
+            "bser",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://rajeduboard.rajasthan.gov.in/",
+
+        pyq:
+            "https://rajeduboard.rajasthan.gov.in/"
+    },
+
+
+    {
+        name: "Sikkim Board",
+
+        fullName:
+            "Board of Open Schooling and Skill Education, Sikkim",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "sikkim",
+            "bosse",
+            "open schooling",
+            "school board"
+        ],
+
+        official:
+            "https://www.bosse.ac.in/",
+
+        pyq:
+            "https://www.bosse.ac.in/"
+    },
+
+
+    {
+        name: "Tamil Nadu Board",
+
+        fullName:
+            "Tamil Nadu State Board of School Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "tamil nadu",
+            "tn",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://www.tamilnadustateboard.org/",
+
+        pyq:
+            "https://www.tamilnadustateboard.org/"
+    },
+
+
+    {
+        name: "Telangana Board",
+
+        fullName:
+            "Board of Secondary Education, Telangana",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "telangana",
+            "bse telangana",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://www.bsetelangana.gov.in/",
+
+        pyq:
+            "https://www.bsetelangana.gov.in/"
+    },
+
+
+    {
+        name: "Tripura Board",
+
+        fullName:
+            "Tripura Board of Secondary Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "tripura",
+            "tbse",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://tbse.tripura.gov.in/",
+
+        pyq:
+            "https://tbse.tripura.gov.in/"
+    },
+
+
+    {
+        name: "Uttar Pradesh Board",
+
+        fullName:
+            "Board of High School and Intermediate Education, Uttar Pradesh",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "uttar pradesh",
+            "up",
+            "upmsp",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://upmsp.edu.in/",
+
+        pyq:
+            "https://upmsp.edu.in/"
+    },
+
+
+    {
+        name: "Uttarakhand Board",
+
+        fullName:
+            "Uttarakhand Board of School Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "uttarakhand",
+            "ubse",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://ubse.uk.gov.in/",
+
+        pyq:
+            "https://ubse.uk.gov.in/"
+    },
+
+
+    {
+        name: "West Bengal Board",
+
+        fullName:
+            "West Bengal Board of Secondary Education / West Bengal Council of Higher Secondary Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "west bengal",
+            "wbbse",
+            "wbchse",
+            "state board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://wbbse.wb.gov.in/",
+
+        pyq:
+            "https://wbchse.wb.gov.in/"
+    },
+
+
+    {
+        name: "Delhi Board (DBSE)",
+
+        fullName:
+            "Delhi Board of School Education",
+
+        category:
+            "School Boards",
+
+        tags: [
+            "delhi",
+            "dbse",
+            "school board",
+            "class 10",
+            "class 12"
+        ],
+
+        official:
+            "https://education.delhigovernment.in/",
+
+        pyq:
+            "https://education.delhigovernment.in/"
+    },
+
+
+    /* =================================================
+       ENGINEERING
+    ================================================= */
 
     {
         name: "GATE",
+
         fullName:
             "Graduate Aptitude Test in Engineering",
-        category: "Engineering",
+
+        category:
+            "Engineering",
+
         tags: [
             "gate",
             "engineering",
@@ -228,102 +1229,145 @@ const EXAM_DIRECTORY = [
             "iit",
             "technology"
         ],
+
         official:
             "https://gate2027.iitm.ac.in/",
+
         pyq:
             "https://gate2027.iitm.ac.in/"
     },
 
+
     {
         name: "JEE Main",
+
         fullName:
             "Joint Entrance Examination Main",
-        category: "Engineering",
+
+        category:
+            "Engineering",
+
         tags: [
             "jee",
             "engineering",
             "nta",
             "school"
         ],
+
         official:
             "https://jeemain.nta.nic.in/",
+
         pyq:
             "https://jeemain.nta.nic.in/"
     },
 
+
     {
         name: "JEE Advanced",
+
         fullName:
             "Joint Entrance Examination Advanced",
-        category: "Engineering",
+
+        category:
+            "Engineering",
+
         tags: [
             "jee",
             "advanced",
             "engineering",
             "iit"
         ],
+
         official:
             "https://jeeadv.ac.in/",
+
         pyq:
             "https://jeeadv.ac.in/"
     },
 
+
     {
         name: "BITSAT",
+
         fullName:
             "Birla Institute of Technology and Science Admission Test",
-        category: "Engineering",
+
+        category:
+            "Engineering",
+
         tags: [
             "bitsat",
             "bits",
             "engineering"
         ],
+
         official:
             "https://www.bitsadmission.com/",
+
         pyq:
             "https://www.bitsadmission.com/"
     },
 
+
     {
         name: "VITEEE",
+
         fullName:
             "VIT Engineering Entrance Examination",
-        category: "Engineering",
+
+        category:
+            "Engineering",
+
         tags: [
             "viteee",
             "vit",
             "engineering"
         ],
+
         official:
             "https://viteee.vit.ac.in/",
+
         pyq:
             "https://viteee.vit.ac.in/"
     },
 
+
     {
         name: "WBJEE",
+
         fullName:
             "West Bengal Joint Entrance Examination",
-        category: "Engineering",
+
+        category:
+            "Engineering",
+
         tags: [
             "wbjee",
             "engineering",
             "west bengal"
         ],
+
         official:
             "https://wbjeeb.nic.in/",
+
         pyq:
             "https://wbjeeb.nic.in/"
     },
 
 
-    /* MEDICAL */
+    /* =================================================
+       MEDICAL
+    ================================================= */
 
     {
         name: "NEET UG",
+
         fullName:
             "National Eligibility cum Entrance Test",
-        category: "Medical",
+
+        category:
+            "Medical",
+
         tags: [
             "neet",
             "medical",
@@ -331,420 +1375,596 @@ const EXAM_DIRECTORY = [
             "biology",
             "nta"
         ],
+
         official:
             "https://neet.nta.nic.in/",
+
         pyq:
             "https://neet.nta.nic.in/"
     },
 
+
     {
         name: "NEET PG",
+
         fullName:
             "National Eligibility cum Entrance Test Postgraduate",
-        category: "Medical",
+
+        category:
+            "Medical",
+
         tags: [
             "neet pg",
             "medical",
             "postgraduate"
         ],
+
         official:
             "https://natboard.edu.in/",
+
         pyq:
             "https://natboard.edu.in/"
     },
 
 
-    /* UPSC */
+    /* =================================================
+       UPSC
+    ================================================= */
 
     {
         name: "UPSC Civil Services",
+
         fullName:
             "Civil Services Examination",
-        category: "UPSC",
+
+        category:
+            "UPSC",
+
         tags: [
             "upsc",
             "ias",
             "civil services",
             "government"
         ],
+
         official:
             "https://upsc.gov.in/",
+
         pyq:
             "https://www.upsc.gov.in/examinations/previous-question-papers"
     },
 
+
     {
         name: "UPSC CDS",
+
         fullName:
             "Combined Defence Services Examination",
-        category: "UPSC",
+
+        category:
+            "UPSC",
+
         tags: [
             "upsc",
             "cds",
             "defence"
         ],
+
         official:
             "https://upsc.gov.in/",
+
         pyq:
             "https://www.upsc.gov.in/examinations/previous-question-papers"
     },
 
+
     {
         name: "UPSC NDA",
+
         fullName:
             "National Defence Academy and Naval Academy Examination",
-        category: "UPSC",
+
+        category:
+            "UPSC",
+
         tags: [
             "upsc",
             "nda",
             "defence",
             "school"
         ],
+
         official:
             "https://upsc.gov.in/",
+
         pyq:
             "https://www.upsc.gov.in/examinations/previous-question-papers"
     },
 
 
-    /* SSC */
+    /* =================================================
+       SSC
+    ================================================= */
 
     {
         name: "SSC CGL",
+
         fullName:
             "Staff Selection Commission Combined Graduate Level",
-        category: "SSC",
+
+        category:
+            "SSC",
+
         tags: [
             "ssc",
             "cgl",
             "government",
             "graduate"
         ],
+
         official:
             "https://ssc.gov.in/",
+
         pyq:
             "https://ssc.gov.in/"
     },
 
+
     {
         name: "SSC CHSL",
+
         fullName:
             "Staff Selection Commission Combined Higher Secondary Level",
-        category: "SSC",
+
+        category:
+            "SSC",
+
         tags: [
             "ssc",
             "chsl",
             "government",
             "school"
         ],
+
         official:
             "https://ssc.gov.in/",
+
         pyq:
             "https://ssc.gov.in/"
     },
 
+
     {
         name: "SSC GD",
+
         fullName:
             "SSC General Duty Constable Examination",
-        category: "SSC",
+
+        category:
+            "SSC",
+
         tags: [
             "ssc",
             "gd",
             "government",
             "defence"
         ],
+
         official:
             "https://ssc.gov.in/",
+
         pyq:
             "https://ssc.gov.in/"
     },
 
+
     {
         name: "SSC MTS",
+
         fullName:
             "SSC Multi Tasking Staff Examination",
-        category: "SSC",
+
+        category:
+            "SSC",
+
         tags: [
             "ssc",
             "mts",
             "government"
         ],
+
         official:
             "https://ssc.gov.in/",
+
         pyq:
             "https://ssc.gov.in/"
     },
 
 
-    /* BANKING */
+    /* =================================================
+       BANKING
+    ================================================= */
 
     {
         name: "IBPS PO",
+
         fullName:
             "IBPS Probationary Officer",
-        category: "Banking",
+
+        category:
+            "Banking",
+
         tags: [
             "ibps",
             "po",
             "banking",
             "graduate"
         ],
+
         official:
             "https://www.ibps.in/",
+
         pyq:
             "https://www.ibps.in/"
     },
 
+
     {
         name: "IBPS Clerk",
+
         fullName:
             "IBPS Clerk",
-        category: "Banking",
+
+        category:
+            "Banking",
+
         tags: [
             "ibps",
             "clerk",
             "banking"
         ],
+
         official:
             "https://www.ibps.in/",
+
         pyq:
             "https://www.ibps.in/"
     },
 
+
     {
         name: "SBI PO",
+
         fullName:
             "State Bank of India Probationary Officer",
-        category: "Banking",
+
+        category:
+            "Banking",
+
         tags: [
             "sbi",
             "po",
             "banking"
         ],
+
         official:
             "https://sbi.bank.in/web/careers",
+
         pyq:
             "https://sbi.bank.in/web/careers"
     },
 
+
     {
         name: "SBI Clerk",
+
         fullName:
             "State Bank of India Junior Associate",
-        category: "Banking",
+
+        category:
+            "Banking",
+
         tags: [
             "sbi",
             "clerk",
             "banking"
         ],
+
         official:
             "https://sbi.bank.in/web/careers",
+
         pyq:
             "https://sbi.bank.in/web/careers"
     },
 
 
-    /* MANAGEMENT */
+    /* =================================================
+       MANAGEMENT
+    ================================================= */
 
     {
         name: "CAT",
+
         fullName:
             "Common Admission Test",
-        category: "Management",
+
+        category:
+            "Management",
+
         tags: [
             "cat",
             "mba",
             "management",
             "iim"
         ],
+
         official:
             "https://iimcat.ac.in/",
+
         pyq:
             "https://iimcat.ac.in/"
     },
 
+
     {
         name: "XAT",
+
         fullName:
             "Xavier Aptitude Test",
-        category: "Management",
+
+        category:
+            "Management",
+
         tags: [
             "xat",
             "mba",
             "management"
         ],
+
         official:
             "https://xatonline.in/",
+
         pyq:
             "https://xatonline.in/"
     },
 
+
     {
         name: "CMAT",
+
         fullName:
             "Common Management Admission Test",
-        category: "Management",
+
+        category:
+            "Management",
+
         tags: [
             "cmat",
             "mba",
             "management",
             "nta"
         ],
+
         official:
             "https://exams.nta.ac.in/",
+
         pyq:
             "https://exams.nta.ac.in/"
     },
 
+
     {
         name: "MAT",
+
         fullName:
             "Management Aptitude Test",
-        category: "Management",
+
+        category:
+            "Management",
+
         tags: [
             "mat",
             "mba",
             "management",
             "aima"
         ],
+
         official:
             "https://mat.aima.in/",
+
         pyq:
             "https://mat.aima.in/"
     },
 
+
     {
         name: "SNAP",
+
         fullName:
             "Symbiosis National Aptitude Test",
-        category: "Management",
+
+        category:
+            "Management",
+
         tags: [
             "snap",
             "mba",
             "symbiosis"
         ],
+
         official:
             "https://www.snaptest.org/",
+
         pyq:
             "https://www.snaptest.org/"
     },
 
 
-    /* UNIVERSITY */
+    /* =================================================
+       UNIVERSITY
+    ================================================= */
 
     {
         name: "CUET UG",
+
         fullName:
             "Common University Entrance Test Undergraduate",
-        category: "University",
+
+        category:
+            "University",
+
         tags: [
             "cuet",
             "university",
             "nta",
             "school"
         ],
+
         official:
             "https://exams.nta.ac.in/",
+
         pyq:
             "https://exams.nta.ac.in/"
     },
 
+
     {
         name: "CUET PG",
+
         fullName:
             "Common University Entrance Test Postgraduate",
-        category: "University",
+
+        category:
+            "University",
+
         tags: [
             "cuet",
             "pg",
             "university",
             "nta"
         ],
+
         official:
             "https://exams.nta.ac.in/",
+
         pyq:
             "https://exams.nta.ac.in/"
     },
 
 
-    /* LAW */
+    /* =================================================
+       LAW
+    ================================================= */
 
     {
         name: "CLAT",
+
         fullName:
             "Common Law Admission Test",
-        category: "Law",
+
+        category:
+            "Law",
+
         tags: [
             "clat",
             "law",
             "nlu"
         ],
+
         official:
             "https://consortiumofnlus.ac.in/",
+
         pyq:
             "https://consortiumofnlus.ac.in/"
     },
 
+
     {
         name: "AILET",
+
         fullName:
             "All India Law Entrance Test",
-        category: "Law",
+
+        category:
+            "Law",
+
         tags: [
             "ailet",
             "law",
             "nlud"
         ],
+
         official:
             "https://nationallawuniversitydelhi.in/",
+
         pyq:
             "https://nationallawuniversitydelhi.in/"
     },
 
 
-    /* DESIGN */
+    /* =================================================
+       DESIGN
+    ================================================= */
 
     {
         name: "NIFT Entrance",
+
         fullName:
             "National Institute of Fashion Technology Entrance Examination",
-        category: "Design",
+
+        category:
+            "Design",
+
         tags: [
             "nift",
             "design",
             "fashion"
         ],
+
         official:
             "https://www.nift.ac.in/",
+
         pyq:
             "https://www.nift.ac.in/"
     },
 
+
     {
         name: "NID DAT",
+
         fullName:
             "National Institute of Design Design Aptitude Test",
-        category: "Design",
+
+        category:
+            "Design",
+
         tags: [
             "nid",
             "dat",
             "design"
         ],
+
         official:
             "https://admissions.nid.edu/",
+
         pyq:
             "https://admissions.nid.edu/"
     },
 
 
-    /* EDUCATION */
+    /* =================================================
+       EDUCATION
+    ================================================= */
 
     {
         name: "UGC NET",
+
         fullName:
             "University Grants Commission National Eligibility Test",
-        category: "Education",
+
+        category:
+            "Education",
+
         tags: [
             "ugc",
             "net",
@@ -752,25 +1972,34 @@ const EXAM_DIRECTORY = [
             "research",
             "nta"
         ],
+
         official:
             "https://ugcnet.nta.nic.in/",
+
         pyq:
             "https://ugcnet.nta.nic.in/"
     },
 
+
     {
         name: "CTET",
+
         fullName:
             "Central Teacher Eligibility Test",
-        category: "Education",
+
+        category:
+            "Education",
+
         tags: [
             "ctet",
             "teaching",
             "teacher",
             "school"
         ],
+
         official:
             "https://ctet.nic.in/",
+
         pyq:
             "https://ctet.nic.in/"
     }
@@ -781,13 +2010,14 @@ const EXAM_DIRECTORY = [
 let directoryCategory =
     "all";
 
+
 let directorySearch =
     "";
 
 
 /* =====================================================
    USER PROFILE / RECOMMENDATIONS
-   ===================================================== */
+===================================================== */
 
 function getUser() {
 
@@ -811,9 +2041,9 @@ function getUser() {
                     )
                 );
 
-            if (value) {
+
+            if (value)
                 return value;
-            }
 
         } catch {}
 
@@ -827,9 +2057,9 @@ function getUser() {
                     )
                 );
 
-            if (value) {
+
+            if (value)
                 return value;
-            }
 
         } catch {}
 
@@ -846,38 +2076,24 @@ function profileText() {
     const user =
         getUser();
 
+
     return [
 
         user.name,
-
         user.type,
-
         user.studentType,
-
         user.category,
-
         user.stream,
-
         user.degree,
-
         user.branch,
-
         user.college,
-
         user.collegeName,
-
         user.school,
-
         user.schoolName,
-
         user.profession,
-
         user.targetExam,
-
         user.target,
-
         user.goal,
-
         user.subjects
 
     ]
@@ -895,12 +2111,13 @@ function scoreExam(
     const profile =
         profileText();
 
-    if (!profile) {
+
+    if (!profile)
         return 0;
-    }
 
 
-    let score = 0;
+    let score =
+        0;
 
 
     [
@@ -913,12 +2130,17 @@ function scoreExam(
         word => {
 
             const value =
-                String(word)
+                String(
+                    word
+                )
                 .toLowerCase();
+
 
             if (
                 value.length > 2 &&
-                profile.includes(value)
+                profile.includes(
+                    value
+                )
             ) {
 
                 score += 3;
@@ -931,6 +2153,7 @@ function scoreExam(
 
     const user =
         getUser();
+
 
     const target =
         String(
@@ -947,9 +2170,9 @@ function scoreExam(
         (
             exam.name
                 .toLowerCase()
-                .includes(
-                    target
-                ) ||
+                .includes(target)
+
+            ||
 
             target.includes(
                 exam.name
@@ -972,26 +2195,23 @@ function getRecommended() {
 
     const ranked =
         EXAM_DIRECTORY
-        .map(
-            exam => ({
-
-                exam,
-
-                score:
-                    scoreExam(
-                        exam
-                    )
-
-            })
-        )
-        .sort(
-            (
-                a,
-                b
-            ) =>
-                b.score -
-                a.score
-        );
+            .map(
+                exam => ({
+                    exam,
+                    score:
+                        scoreExam(
+                            exam
+                        )
+                })
+            )
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+                    b.score -
+                    a.score
+            );
 
 
     const matched =
@@ -1003,8 +2223,10 @@ function getRecommended() {
 
     return (
         matched.length
-            ? matched
-            : ranked
+            ?
+            matched
+            :
+            ranked
     )
     .slice(
         0,
@@ -1019,13 +2241,14 @@ function renderRecommended() {
     const container =
         $("recommendedExams");
 
-    if (!container) {
+
+    if (!container)
         return;
-    }
 
 
     const count =
         $("recommendedExamCount");
+
 
     const data =
         getRecommended();
@@ -1041,157 +2264,152 @@ function renderRecommended() {
 
     container.innerHTML =
         data
-        .map(
-            ({
-                exam,
-                score
-            }) => {
+            .map(
+                ({
+                    exam,
+                    score
+                }) => {
 
-                const reason =
-                    score >= 10
+                    const reason =
+                        score >= 10
 
-                        ? "Strong match for your target"
+                            ?
+                            "Strong match for your target"
 
-                        : score > 0
+                            :
 
-                            ? "Matches your profile"
+                            score > 0
 
-                            : "Popular exam option";
+                                ?
+                                "Matches your profile"
+
+                                :
+                                "Popular exam option";
 
 
-                return `
+                    return `
 
-                    <article
-                        class="
-                            directory-card
-                            recommended-card
-                        "
-                    >
-
-                        <div
+                        <article
                             class="
-                                directory-card-top
+                                directory-card
+                                recommended-card
                             "
                         >
 
-                            <span
+                            <div
                                 class="
-                                    directory-category
+                                    directory-card-top
+                                "
+                            >
+
+                                <span
+                                    class="
+                                        directory-category
+                                    "
+                                >
+                                    ${esc(
+                                        exam.category
+                                    )}
+                                </span>
+
+
+                                <span
+                                    class="
+                                        recommended-badge
+                                    "
+                                >
+                                    ⭐ Recommended
+                                </span>
+
+                            </div>
+
+
+                            <h3>
+                                ${esc(
+                                    exam.name
+                                )}
+                            </h3>
+
+
+                            <p>
+                                ${esc(
+                                    exam.fullName
+                                )}
+                            </p>
+
+
+                            <p
+                                class="
+                                    recommended-reason
                                 "
                             >
                                 ${esc(
-                                    exam.category
+                                    reason
                                 )}
-                            </span>
+                            </p>
 
 
-                            <span
+                            <div
                                 class="
-                                    recommended-badge
+                                    recommended-actions
                                 "
                             >
-                                ⭐ Recommended
-                            </span>
 
-                        </div>
-
-
-                        <h3>
-                            ${esc(
-                                exam.name
-                            )}
-                        </h3>
-
-
-                        <p>
-                            ${esc(
-                                exam.fullName
-                            )}
-                        </p>
+                                <a
+                                    class="official"
+                                    href="${normalizeURL(
+                                        exam.official
+                                    )}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Official ↗
+                                </a>
 
 
-                        <p
-                            class="
-                                recommended-reason
-                            "
-                        >
-                            ${esc(
-                                reason
-                            )}
-                        </p>
+                                <a
+                                    class="pyq"
+                                    href="${normalizeURL(
+                                        exam.pyq
+                                    )}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    PYQs ↗
+                                </a>
 
+                            </div>
 
-                        <div
-                            class="
-                                recommended-actions
-                            "
-                        >
+                        </article>
 
-                            <a
-                                class="official"
+                    `;
 
-                                href="${normalizeURL(
-                                    exam.official
-                                )}"
-
-                                target="_blank"
-
-                                rel="
-                                    noopener
-                                    noreferrer
-                                "
-                            >
-                                Official ↗
-                            </a>
-
-
-                            <a
-                                class="pyq"
-
-                                href="${normalizeURL(
-                                    exam.pyq
-                                )}"
-
-                                target="_blank"
-
-                                rel="
-                                    noopener
-                                    noreferrer
-                                "
-                            >
-                                PYQs ↗
-                            </a>
-
-                        </div>
-
-                    </article>
-
-                `;
-
-            }
-        )
-        .join("");
+                }
+            )
+            .join("");
 
 }
 
 
 /* =====================================================
-   DIRECTORY
-   ===================================================== */
+   DIRECTORY CATEGORIES
+===================================================== */
 
 function renderCategories() {
 
     const container =
         $("directoryCategories");
 
-    if (!container) {
+
+    if (!container)
         return;
-    }
 
 
     const categories = [
 
         "all",
+
+        "School Boards",
 
         "Engineering",
 
@@ -1218,41 +2436,45 @@ function renderCategories() {
 
     container.innerHTML =
         categories
-        .map(
-            category => `
+            .map(
+                category => `
 
-                <button
-                    type="button"
+                    <button
+                        type="button"
 
-                    class="
-                        directory-category-btn
-                        ${
-                            directoryCategory ===
-                            category
-                                ? "active"
-                                : ""
-                        }
-                    "
-
-                    data-category="${esc(
-                        category
-                    )}"
-                >
-
-                    ${
-                        category ===
-                        "all"
-                            ? "All"
-                            : esc(
+                        class="
+                            directory-category-btn
+                            ${
+                                directoryCategory ===
                                 category
-                            )
-                    }
+                                    ?
+                                    "active"
+                                    :
+                                    ""
+                            }
+                        "
 
-                </button>
+                        data-category="${esc(
+                            category
+                        )}"
+                    >
 
-            `
-        )
-        .join("");
+                        ${
+                            category ===
+                            "all"
+                                ?
+                                "All"
+                                :
+                                esc(
+                                    category
+                                )
+                        }
+
+                    </button>
+
+                `
+            )
+            .join("");
 
 
     container
@@ -1269,6 +2491,9 @@ function renderCategories() {
                             button.dataset
                                 .category;
 
+
+                        renderCategories();
+
                         renderDirectory();
 
                     };
@@ -1279,14 +2504,18 @@ function renderCategories() {
 }
 
 
+/* =====================================================
+   DIRECTORY
+===================================================== */
+
 function renderDirectory() {
 
     const container =
         $("examDirectory");
 
-    if (!container) {
+
+    if (!container)
         return;
-    }
 
 
     const count =
@@ -1295,50 +2524,49 @@ function renderDirectory() {
 
     const search =
         directorySearch
-        .trim()
-        .toLowerCase();
+            .trim()
+            .toLowerCase();
 
 
     const results =
         EXAM_DIRECTORY
-        .filter(
-            exam => {
+            .filter(
+                exam => {
 
-                if (
-                    directoryCategory !==
-                    "all" &&
+                    if (
+                        directoryCategory !==
+                        "all"
+                        &&
+                        exam.category !==
+                        directoryCategory
+                    ) {
 
-                    exam.category !==
-                    directoryCategory
-                ) {
+                        return false;
 
-                    return false;
+                    }
+
+
+                    if (!search)
+                        return true;
+
+
+                    const text =
+                        [
+                            exam.name,
+                            exam.fullName,
+                            exam.category,
+                            ...exam.tags
+                        ]
+                        .join(" ")
+                        .toLowerCase();
+
+
+                    return text.includes(
+                        search
+                    );
 
                 }
-
-
-                if (!search) {
-                    return true;
-                }
-
-
-                const text =
-                    [
-                        exam.name,
-                        exam.fullName,
-                        exam.category,
-                        ...exam.tags
-                    ]
-                    .join(" ")
-                    .toLowerCase();
-
-
-                return text.includes(
-                    search
-                );
-
-            }
-        );
+            );
 
 
     if (count) {
@@ -1355,137 +2583,130 @@ function renderDirectory() {
             ?
 
             results
-            .map(
-                exam => `
+                .map(
+                    exam => `
 
-                    <article
-                        class="
-                            directory-card
-                        "
-                    >
-
-                        <div
+                        <article
                             class="
-                                directory-card-top
+                                directory-card
                             "
                         >
 
-                            <span
+                            <div
                                 class="
-                                    directory-category
+                                    directory-card-top
                                 "
                             >
+
+                                <span
+                                    class="
+                                        directory-category
+                                    "
+                                >
+                                    ${esc(
+                                        exam.category
+                                    )}
+                                </span>
+
+                            </div>
+
+
+                            <h3>
                                 ${esc(
-                                    exam.category
-                                )}
-                            </span>
-
-                        </div>
-
-
-                        <h3>
-                            ${esc(
-                                exam.name
-                            )}
-                        </h3>
-
-
-                        <p>
-                            ${esc(
-                                exam.fullName
-                            )}
-                        </p>
-
-
-                        <div
-                            class="
-                                directory-links
-                            "
-                        >
-
-                            <a
-                                class="
-                                    directory-link
-                                "
-
-                                href="${normalizeURL(
-                                    exam.official
-                                )}"
-
-                                target="_blank"
-
-                                rel="
-                                    noopener
-                                    noreferrer
-                                "
-                            >
-                                Official ↗
-                            </a>
-
-
-                            <a
-                                class="
-                                    directory-pyq
-                                "
-
-                                href="${normalizeURL(
-                                    exam.pyq
-                                )}"
-
-                                target="_blank"
-
-                                rel="
-                                    noopener
-                                    noreferrer
-                                "
-                            >
-                                PYQs ↗
-                            </a>
-
-
-                            <button
-                                type="button"
-
-                                class="
-                                    directory-pyq
-                                    track-directory-exam
-                                "
-
-                                data-exam="${esc(
                                     exam.name
-                                )}"
+                                )}
+                            </h3>
+
+
+                            <p>
+                                ${esc(
+                                    exam.fullName
+                                )}
+                            </p>
+
+
+                            <div
+                                class="
+                                    directory-links
+                                "
                             >
-                                + Track
-                            </button>
 
-                        </div>
+                                <a
+                                    class="
+                                        directory-link
+                                    "
 
-                    </article>
+                                    href="${normalizeURL(
+                                        exam.official
+                                    )}"
 
-                `
-            )
-            .join("")
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Official ↗
+                                </a>
+
+
+                                <a
+                                    class="
+                                        directory-pyq
+                                    "
+
+                                    href="${normalizeURL(
+                                        exam.pyq
+                                    )}"
+
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    PYQs ↗
+                                </a>
+
+
+                                <button
+                                    type="button"
+
+                                    class="
+                                        directory-pyq
+                                        track-directory-exam
+                                    "
+
+                                    data-exam="${esc(
+                                        exam.name
+                                    )}"
+                                >
+                                    + Track
+                                </button>
+
+                            </div>
+
+                        </article>
+
+                    `
+                )
+                .join("")
 
             :
 
             `
 
-            <div
-                class="
-                    directory-card
-                    exam-empty-state
-                "
-            >
+                <div
+                    class="
+                        directory-card
+                        exam-empty-state
+                    "
+                >
 
-                <h3>
-                    No matching exams
-                </h3>
+                    <h3>
+                        No matching exams
+                    </h3>
 
-                <p>
-                    Try another keyword or category.
-                </p>
 
-            </div>
+                    <p>
+                        Try another keyword or category.
+                    </p>
+
+                </div>
 
             `;
 
@@ -1510,14 +2731,18 @@ function renderDirectory() {
 }
 
 
+/* =====================================================
+   SEARCH
+===================================================== */
+
 function setupSearch() {
 
     const input =
         $("examDirectorySearch");
 
-    if (!input) {
+
+    if (!input)
         return;
-    }
 
 
     input.oninput =
@@ -1525,6 +2750,7 @@ function setupSearch() {
 
             directorySearch =
                 input.value;
+
 
             renderDirectory();
 
@@ -1535,7 +2761,7 @@ function setupSearch() {
 
 /* =====================================================
    OFFICIAL PORTALS
-   ===================================================== */
+===================================================== */
 
 function renderOfficialPortals() {
 
@@ -1544,9 +2770,9 @@ function renderOfficialPortals() {
             "#examsPage .official-box"
         );
 
-    if (!box) {
+
+    if (!box)
         return;
-    }
 
 
     const custom =
@@ -1606,11 +2832,7 @@ function renderOfficialPortals() {
                             )}"
 
                             target="_blank"
-
-                            rel="
-                                noopener
-                                noreferrer
-                            "
+                            rel="noopener noreferrer"
                         >
 
                             ${esc(
@@ -1630,9 +2852,7 @@ function renderOfficialPortals() {
 
             <button
                 id="addPortal"
-
                 class="small-btn"
-
                 type="button"
             >
                 + Add Portal
@@ -1662,16 +2882,16 @@ function renderOfficialPortals() {
 
 /* =====================================================
    TRACKED EXAMS
-   ===================================================== */
+===================================================== */
 
 function renderTrackedExams() {
 
     const container =
         $("examCards");
 
-    if (!container) {
+
+    if (!container)
         return;
-    }
 
 
     const exams =
@@ -1695,17 +2915,16 @@ function renderTrackedExams() {
                     No tracked exams yet
                 </h3>
 
+
                 <p>
-                    Select an exam from the directory
-                    or click Track My Exam.
+                    Select an exam from the
+                    directory or click Track My Exam.
                 </p>
 
 
                 <button
                     class="primary"
-
                     id="emptyTrackExam"
-
                     type="button"
                 >
                     + Track My Exam
@@ -1731,251 +2950,264 @@ function renderTrackedExams() {
 
     container.innerHTML =
         exams
-        .map(
-            exam => {
+            .map(
+                exam => {
 
-                const days =
-                    daysLeft(
-                        exam.date
-                    );
-
-
-                const remaining =
-                    days === null
-                        ? "--"
-                        : Math.max(
-                            0,
-                            days
+                    const days =
+                        daysLeft(
+                            exam.date
                         );
 
 
-                const status =
-                    days !== null &&
-                    days < 0
-
-                        ? "DATE PASSED"
-
-                        : days !== null &&
-                          days <= 7
-
-                            ? "FINAL REVISION"
-
-                            : days !== null &&
-                              days <= 30
-
-                                ? "EXAM APPROACHING"
-
-                                : "ON TRACK";
+                    const remaining =
+                        days === null
+                            ?
+                            "--"
+                            :
+                            Math.max(
+                                0,
+                                days
+                            );
 
 
-                const statusClass =
-                    days !== null &&
-                    days < 0
+                    const status =
+                        days !== null &&
+                        days < 0
 
-                        ? "passed"
+                            ?
 
-                        : days !== null &&
-                          days <= 7
+                            "DATE PASSED"
 
-                            ? "urgent"
+                            :
 
-                            : days !== null &&
-                              days <= 30
+                            days !== null &&
+                            days <= 7
 
-                                ? "soon"
-
-                                : "ontrack";
-
-
-                return `
-
-                    <article
-                        class="
-                            exam-card
-                            tracked-exam-card
-                        "
-                    >
-
-                        <div
-                            class="
-                                exam-card-top
-                            "
-                        >
-
-                            <span
-                                class="
-                                    exam-category-badge
-                                "
-                            >
-                                ${esc(
-                                    exam.category ||
-                                    "Other"
-                                )}
-                            </span>
-
-
-                            <button
-                                class="
-                                    exam-delete
-                                "
-
-                                type="button"
-
-                                data-delete-exam="${esc(
-                                    exam.id
-                                )}"
-
-                                title="
-                                    Remove exam
-                                "
-                            >
-                                🗑
-                            </button>
-
-                        </div>
-
-
-                        <h3>
-                            ${esc(
-                                exam.name
-                            )}
-                        </h3>
-
-
-                        <div
-                            class="
-                                exam-days
-                            "
-                        >
-                            ${remaining}
-                        </div>
-
-
-                        <small>
-                            DAYS LEFT
-                        </small>
-
-
-                        <div
-                            class="
-                                exam-status
-                                ${statusClass}
-                            "
-                        >
-                            ${status}
-                        </div>
-
-
-                        <p>
-                            📅
-                            ${esc(
-                                formatDate(
-                                    exam.date
-                                )
-                            )}
-                        </p>
-
-
-                        ${
-                            exam.target
                                 ?
 
-                                `
-                                <p>
-                                    🎯 Target:
-                                    ${esc(
-                                        exam.target
-                                    )}
-                                </p>
-                                `
+                                "FINAL REVISION"
 
                                 :
 
-                                ""
-                        }
+                                days !== null &&
+                                days <= 30
+
+                                    ?
+
+                                    "EXAM APPROACHING"
+
+                                    :
+
+                                    "ON TRACK";
 
 
-                        <div
+                    const statusClass =
+                        days !== null &&
+                        days < 0
+
+                            ?
+
+                            "passed"
+
+                            :
+
+                            days !== null &&
+                            days <= 7
+
+                                ?
+
+                                "urgent"
+
+                                :
+
+                                days !== null &&
+                                days <= 30
+
+                                    ?
+
+                                    "soon"
+
+                                    :
+
+                                    "ontrack";
+
+
+                    return `
+
+                        <article
                             class="
-                                exam-actions
+                                exam-card
+                                tracked-exam-card
                             "
                         >
 
-                            ${
-                                exam.official
-
-                                    ?
-
-                                    `
-                                    <a
-                                        href="${normalizeURL(
-                                            exam.official
-                                        )}"
-
-                                        target="_blank"
-
-                                        rel="
-                                            noopener
-                                            noreferrer
-                                        "
-                                    >
-                                        Official ↗
-                                    </a>
-                                    `
-
-                                    :
-
-                                    ""
-                            }
-
-
-                            ${
-                                exam.pyq
-
-                                    ?
-
-                                    `
-                                    <a
-                                        href="${normalizeURL(
-                                            exam.pyq
-                                        )}"
-
-                                        target="_blank"
-
-                                        rel="
-                                            noopener
-                                            noreferrer
-                                        "
-                                    >
-                                        PYQs ↗
-                                    </a>
-                                    `
-
-                                    :
-
-                                    ""
-                            }
-
-
-                            <button
-                                type="button"
-
-                                data-delete-exam="${esc(
-                                    exam.id
-                                )}"
+                            <div
+                                class="
+                                    exam-card-top
+                                "
                             >
-                                Remove
-                            </button>
 
-                        </div>
+                                <span
+                                    class="
+                                        exam-category-badge
+                                    "
+                                >
+                                    ${esc(
+                                        exam.category ||
+                                        "Other"
+                                    )}
+                                </span>
 
-                    </article>
 
-                `;
+                                <button
+                                    class="
+                                        exam-delete
+                                    "
 
-            }
-        )
-        .join("");
+                                    type="button"
+
+                                    data-delete-exam="${esc(
+                                        exam.id
+                                    )}"
+
+                                    title="Remove exam"
+                                >
+                                    🗑
+                                </button>
+
+                            </div>
+
+
+                            <h3>
+                                ${esc(
+                                    exam.name
+                                )}
+                            </h3>
+
+
+                            <div
+                                class="
+                                    exam-days
+                                "
+                            >
+                                ${remaining}
+                            </div>
+
+
+                            <small>
+                                DAYS LEFT
+                            </small>
+
+
+                            <div
+                                class="
+                                    exam-status
+                                    ${statusClass}
+                                "
+                            >
+                                ${status}
+                            </div>
+
+
+                            <p>
+                                📅
+                                ${esc(
+                                    formatDate(
+                                        exam.date
+                                    )
+                                )}
+                            </p>
+
+
+                            ${
+                                exam.target
+                                    ?
+
+                                    `
+                                    <p>
+                                        🎯 Target:
+                                        ${esc(
+                                            exam.target
+                                        )}
+                                    </p>
+                                    `
+
+                                    :
+
+                                    ""
+                            }
+
+
+                            <div
+                                class="
+                                    exam-actions
+                                "
+                            >
+
+                                ${
+                                    exam.official
+                                        ?
+
+                                        `
+                                        <a
+                                            href="${normalizeURL(
+                                                exam.official
+                                            )}"
+
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Official ↗
+                                        </a>
+                                        `
+
+                                        :
+
+                                        ""
+                                }
+
+
+                                ${
+                                    exam.pyq
+                                        ?
+
+                                        `
+                                        <a
+                                            href="${normalizeURL(
+                                                exam.pyq
+                                            )}"
+
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            PYQs ↗
+                                        </a>
+                                        `
+
+                                        :
+
+                                        ""
+                                }
+
+
+                                <button
+                                    type="button"
+                                    data-delete-exam="${esc(
+                                        exam.id
+                                    )}"
+                                >
+                                    Remove
+                                </button>
+
+                            </div>
+
+                        </article>
+
+                    `;
+
+                }
+            )
+            .join("");
 
 
     container
@@ -2032,8 +3264,8 @@ function renderTrackedExams() {
 
 
 /* =====================================================
-   MODALS / FORMS
-   ===================================================== */
+   EXAM MODAL
+===================================================== */
 
 function openExamModal(
     examName = ""
@@ -2042,21 +3274,19 @@ function openExamModal(
     const modal =
         $("examModal");
 
-    if (!modal) {
+
+    if (!modal)
         return;
-    }
 
 
-    modal
-        .classList
+    modal.classList
         .remove(
             "hidden"
         );
 
 
     const exam =
-        EXAM_DIRECTORY
-        .find(
+        EXAM_DIRECTORY.find(
             item =>
                 item.name ===
                 examName
@@ -2125,6 +3355,10 @@ function closeExamModal() {
 }
 
 
+/* =====================================================
+   PORTAL MODAL
+===================================================== */
+
 function openPortalModal() {
 
     $("portalModal")
@@ -2147,6 +3381,10 @@ function closePortalModal() {
 }
 
 
+/* =====================================================
+   EXAM FORM
+===================================================== */
+
 function handleExamSubmit(
     event
 ) {
@@ -2157,42 +3395,47 @@ function handleExamSubmit(
     const name =
         $("examName")
             ?.value
-            .trim() ||
-        "";
+            .trim()
+            || "";
 
 
     const category =
         $("examCategory")
-            ?.value ||
-        "Other";
+            ?.value
+            ||
+            "Other";
 
 
     const date =
         $("examDate")
-            ?.value ||
-        "";
+            ?.value
+            ||
+            "";
 
 
     const target =
         $("examTarget")
             ?.value
-            .trim() ||
-        "";
+            .trim()
+            ||
+            "";
 
 
     const official =
         normalizeURL(
             $("examOfficial")
-                ?.value ||
-            ""
+                ?.value
+                ||
+                ""
         );
 
 
     const pyq =
         normalizeURL(
             $("examPYQ")
-                ?.value ||
-            ""
+                ?.value
+                ||
+                ""
         );
 
 
@@ -2204,6 +3447,7 @@ function handleExamSubmit(
         alert(
             "Please enter the exam name and exam date."
         );
+
 
         return;
 
@@ -2222,7 +3466,8 @@ function handleExamSubmit(
                 String(
                     exam.name
                 )
-                .toLowerCase() ===
+                .toLowerCase()
+                ===
                 name.toLowerCase()
         )
     ) {
@@ -2230,6 +3475,7 @@ function handleExamSubmit(
         alert(
             "This exam is already being tracked."
         );
+
 
         return;
 
@@ -2280,6 +3526,10 @@ function handleExamSubmit(
 }
 
 
+/* =====================================================
+   PORTAL FORM
+===================================================== */
+
 function handlePortalSubmit(
     event
 ) {
@@ -2290,15 +3540,17 @@ function handlePortalSubmit(
     const name =
         $("portalName")
             ?.value
-            .trim() ||
-        "";
+            .trim()
+            ||
+            "";
 
 
     const link =
         normalizeURL(
             $("portalLink")
-                ?.value ||
-            ""
+                ?.value
+                ||
+                ""
         );
 
 
@@ -2310,6 +3562,7 @@ function handlePortalSubmit(
         alert(
             "Please enter the portal name and link."
         );
+
 
         return;
 
@@ -2353,7 +3606,7 @@ function handlePortalSubmit(
 
 /* =====================================================
    EVENT SETUP
-   ===================================================== */
+===================================================== */
 
 function setupEvents() {
 
@@ -2443,7 +3696,7 @@ function setupEvents() {
 
 /* =====================================================
    PUBLIC API
-   ===================================================== */
+===================================================== */
 
 export function renderExams() {
 
@@ -2468,6 +3721,10 @@ export function initExams() {
 
 }
 
+
+/* =====================================================
+   EXPORTS
+===================================================== */
 
 export {
 
